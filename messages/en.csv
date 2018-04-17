@@ -1,0 +1,89 @@
+i18n_owners_hanging					; Cannot remove: this quiz is shared with other teachers. See the configuration of this quiz.
+i18n_activate_quiz                  ; Activate
+i18n_you_must_belong_to_group		; You must be logged to the proper group
+i18n_points							; Points
+i18n_grade							; Grade
+i18n_grades_thresholds				; The thresholds for grades
+i18n_fatal_grades_thresholds		; Something is wrong with the thresholds for grades
+i18n_need_to_complete				; You need to complete this quiz first
+i18n_something_went_wrong			; Something went wrong...
+i18n_err_near_line					; near line
+i18n_input_too_short				; Input too short
+i18n_cancel							; Cancel
+i18n_add                            ; Add
+i18n_all_questions                  ; All questions
+i18n_bad_login                      ; Bad login / password
+i18n_cannot_change_quiz             ; You are currently solving another quiz
+i18n_cannot_rerun_quiz_after_logout ; Error: you seem to have logged out before submitting quiz. Quiz cannot continue.
+i18n_configure                      ; Configure
+i18n_db_error                       ; SQL error
+i18n_deactivate_quiz                ; Deactivate
+i18n_delete                         ; Delete
+i18n_delete_confirm                 ; Are you sure you want to delete?
+i18n_edit                           ; Edit
+i18n_howto_first_time				; For first time users see how <a href=admin.php?quiz_configure=1 class=blink>ExampleQuiz</a> is made.
+i18n_group                          ; Group
+i18n_groups                         ; Groups
+i18n_how_many_questions_long        ; How many questions will student be answering?
+i18n_how_many_questions_short       ; In a single quiz
+i18n_how_much_time_long             ; How many minutes will the quiz take?
+i18n_how_much_time_short            ; Timeout
+i18n_howto_modify_questions         ; We suggest that the questions are composed in an external editor (for backup reasons) and pasted to the window on the left. Just follow the simple rules:<ul><li>1 question, 3 answers, correct answers, empty<li> <green>101</green> encodes correct answers<li>you can reference images after <correct_vector>||</correct_vector><li>images must be <div class=blink id=need_images>uploaded</div> and then their names will be listed at the bottom of this page.</ul>
+i18n_share_quiz						; Share this quiz with other teachers
+i18n_howto_upload_images            ; You can add JPG or PNG images for this quiz by dragging them onto the rectangle below. Images cannot be larger than 300x400 pixels to fit mobile devices. File names must be from range: a-zA-z, digits and _. Then you can reference your image: <br> What can you see in the image? || image.png
+i18n_images_for_this_quiz           ; Image names that you can use in this quiz
+i18n_instructions                   ; Instructions
+i18n_last_name                      ; Last name
+i18n_first_name                     ; First name
+i18n_late_quiz_submission           ; Error: your quiz submission was too late
+i18n_logout                         ; Logout
+i18n_missing_blank                  ; Missing blank line after the question
+i18n_name                           ; Name
+i18n_operation                      ; Operation
+i18n_password                       ; Password
+i18n_pick_for_the_quiz              ; Pick for the quiz
+i18n_preview                        ; Preview
+i18n_question_error                 ; Error somewhere above this question. Make sure each question block takes 6 lines.
+i18n_questions                      ; Questions
+i18n_quiz                           ; Quiz
+i18n_quiz_active_until              ; Active until
+i18n_quiz_disabled                  ; Quiz is disabled
+i18n_quiz_name                      ; Quiz Name
+i18n_quiz_submited_before			; Error: Your quiz has been submitted before
+i18n_quizes_configure               ; Configure quizes
+i18n_quizes_results                 ; Results
+i18n_run_quizes                     ; Run quizes
+i18n_saved                          ; Changes have been saved
+i18n_select                         ; Select
+i18n_select_groups                  ; Select groups
+i18n_show                           ; Show
+i18n_submit                         ; Submit
+i18n_time                           ; Time
+i18n_too_few_questions_for_quiz     ; Error: too few questions for the quiz
+i18n_update                         ; Update
+i18n_upload                         ; Upload
+i18n_you_refreshed_quiz             ; Refreshing the quiz clears your answers!
+i18n_multiple_choice_quiz           ; Multiple choice quiz
+i18n_scoring_of_the_answers         ; Scoring of the answers
+i18n_fully_correct_answer           ; Fully correct
+i18n_no_answer                      ; Empty
+i18n_wrong_answer                   ; Not fully correct
+i18n_didnt_complete                 ; Didn't complete
+i18n_select_quiz                    ; Run a new  quiz
+i18n_empty_results                  ; No result
+i18n_help_pin                       ; Students need to know the PIN to access your test. Announce the PIN in the classroom. 
+i18n_help_secret					; Ask your teacher. He has the Secret under "Students" in his Karramba menu.
+i18n_help_what_is_secret			; Some students may not yet have the accounts in Karramba. If they add the accounts and they ask, tell them the Secret.
+i18n_help_active_until              ; Students can log up to this time. This is not any restriction on when students should submit their answers! The quiz will be deactivated automatically if you do not deactivate it. The time is compared against the clock displayed nearby.
+i18n_help_select_groups             ; Choose the quiz and the groups and Activate the quiz. Students will be allowed to login within 20 minutes from the time the test is activated.
+i18n_help_select_owners				; You can share this quiz with other teachers. The selected teachers can modify questions and answers in this quiz and can manage how the quiz is shared.
+i18n_wrong_pin                      ; Wrong PIN
+i18n_wrong_secret					; Wrong Secret
+i18n_secret							; Secret
+i18n_img_not_writable				; Error: the directory img/ is not writable. Contact your system administrator.
+i18n_answers_cannot_be_zeroes		; Answers '000' are not allowed.
+i18n_near_question					; Near question
+i18n_answers_not_binary_triplet		; Answers must be a binary triplet, e.g. '011' or '101'
+i18n_in_question					; In question
+i18n_number_of_questions			; Questions
+i18n_submit_complete_quiz			; Submit the complete quiz

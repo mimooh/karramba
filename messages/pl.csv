@@ -1,0 +1,90 @@
+i18n_owners_hanging					; Nie mogę usunać testu, ponieważ jest on współdzielony z innymi wykładowcami. Zobacz konfigurację testu.
+i18n_activate_quiz                  ; Aktywuj
+i18n_you_must_belong_to_group		; Musisz być zalogowany do właściwej grupy
+i18n_points							; Punkty
+i18n_grade							; Ocena
+i18n_fatal_grades_thresholds		; Błąd w prograch dla ocen
+i18n_grades_thresholds				; Progi dla ocen
+i18n_need_to_complete				; Musisz najpierw dokończyć rozpoczęty test
+i18n_something_went_wrong			; Coś poszło nie tak...
+i18n_err_near_line					; w okolicy linii
+i18n_input_too_short				; Za mało danych
+i18n_cancel							; Anuluj
+i18n_add                            ; Dodaj
+i18n_all_questions                  ; Wszystkie pytania
+i18n_bad_login                      ; Zły login / hasło
+i18n_cannot_change_quiz             ; Jesteś w trakcie rozwiązywania innego testu
+i18n_cannot_rerun_quiz_after_logout ; Błąd: Wylogowałeś się Test przerwany.
+i18n_configure                      ; Konfiguruj
+i18n_db_error                       ; Błąd SQL
+i18n_deactivate_quiz                ; Deaktywuj
+i18n_delete                         ; Usuń
+i18n_delete_confirm                 ; Na pewno chcesz usunąć?
+i18n_edit                           ; Edytuj
+i18n_howto_first_time				; Zobacz jak konstruowany jest <a href=admin.php?quiz_configure=1 class=blink>ExampleQuiz</a>. Naprawdę zobacz jeżeli tworzysz test pierwszy raz! 
+i18n_group                          ; Grupa
+i18n_groups                         ; Grupy
+i18n_how_many_questions_long        ; Na ile pytań będzie odpowiadał student?
+i18n_how_many_questions_short       ; W jednym teście
+i18n_how_much_time_long             ; Ile minut będzie trwał test?
+i18n_how_much_time_short            ; Czas
+i18n_howto_modify_questions         ; Pytania najlepiej tworzyć w zewnętrznym edytorze (kopia bezpieczeństwa) i wkleić je do obszaru po lewej stronie. Składnia jest następująca:<ul><li>1 pytanie, 3 odpowiedzi, odpowiedzi poprawne, pusta linia<li> <green>101</green> koduje poprawne odpowiedzi<li>możesz odwołać się do obrazków po <correct_vector>||</correct_vector><li>obrazki muszą być <div class=blink id=need_images>załadowane</div> i wtedy ich nazwy pojawią się na dole tej strony.</ul>
+i18n_share_quiz						; Udostępnij ten test innym wykładowcom
+i18n_howto_upload_images            ; Możesz dodać obrazy w formatach JPG / PNG poprzez przeciągnięcie ich do prostokąta poniżej. Obrazy nie mogą być większe niż 300x400 pikseli. Nazwy plików muszą się składać ze znaków: a-zA-z, cyfry oraz _. W treści pytania odwołaj się do obrazu wg przykładu: <br> Co widzisz na obrazie? || obraz.png
+i18n_images_for_this_quiz           ; Nazwy dostępnych obrazków dla tego testu 
+i18n_instructions                   ; Instrukcje
+i18n_last_name                      ; Nazwisko
+i18n_first_name                     ; Imię
+i18n_late_quiz_submission           ; Błąd: załadowałeś test po czasie
+i18n_logout                         ; Wyloguj
+i18n_missing_blank                  ; Brak pustej linii po pytaniu 
+i18n_name                           ; Nazwa
+i18n_operation                      ; Operacja
+i18n_password                       ; Hasło
+i18n_pick_for_the_quiz              ; Wybierz dla testu
+i18n_preview                        ; Podgląd
+i18n_question_error                 ; Coś nie tak powyżej pytania. Upewnij się, że każdy blok pytaniowy składa się z 6 linii.
+i18n_questions                      ; Pytania
+i18n_quiz                           ; Test
+i18n_quiz_active_until              ; Aktywny do
+i18n_quiz_disabled                  ; Test jest niedostępny
+i18n_quiz_name                      ; Nazwa testu
+i18n_quiz_submited_before	        ; Błąd: Rozwiązałeś ten test wcześniej 
+i18n_quizes_configure               ; Konfiguruj testy
+i18n_quizes_results                 ; Wyniki
+i18n_run_quizes                     ; Przeprowadź test
+i18n_saved                          ; Zapisano zmiany
+i18n_select                         ; Wybierz
+i18n_select_groups                  ; Wybierz grupy
+i18n_show                           ; Pokaż
+i18n_submit                         ; Wyślij
+i18n_time                           ; Czas
+i18n_too_few_questions_for_quiz     ; Błąd: Za mało pytań dla tego testu
+i18n_update                         ; Aktualizuj
+i18n_upload                         ; Załaduj
+i18n_you_refreshed_quiz             ; Odświeżanie strony czyści formularz!
+i18n_multiple_choice_quiz           ; Test wielokrotnego wyboru
+i18n_scoring_of_the_answers         ; Punktacja odpowiedzi
+i18n_fully_correct_answer           ; W pełni poprawna
+i18n_no_answer                      ; Brak
+i18n_wrong_answer                   ; Nie w pełni poprawna
+i18n_confirm_quiz_submit            ; Wysyłasz cały rozwiązany test
+i18n_didnt_complete					; Nie ukończył
+i18n_select_quiz                    ; Uruchom nowy test 
+i18n_empty_results					; Brak danych
+i18n_help_pin						; Studenci muszą poznać PIN żeby włączyć się do Twojego testu. Ogłoś PIN na sali wykładowej.
+i18n_help_secret					; Zapytaj wykładowcę. Sekret jest w jego menu Karramby pod linkiem "Studenci".
+i18n_help_what_is_secret			; Mogą przytrafić się studenci którzy nie mają jeszcze kont. Do zarejestrowania nowego konta potrzebny im będzie Sekret.
+i18n_help_active_until				; Po przekroczeniu tego czasu, nie będzie możliwe logowanie się do testu. Ten czas nie ma żadnego związku z czasem po jakim studenci mają wysłać swoje odpowiedzi! Ten czas zostanie zdeaktywowany automatycznie, o ile sam nie wybierzesz Deaktywuj. Czas liczony jest względem zegara wyświetlanego obok.
+i18n_help_select_groups				; Wybierz przedmiot, grupy i Aktywuj test. Studenci będą mogli logować się do testu przez 20 minut od jego aktywowania.
+i18n_help_select_owners				; Możesz współdzielić ten test z innymi wykładowcami. Dołączeni tutaj wykładowcy mogą zmieniać pytania i odpowiedzi w teście oraz zarządzać współdzieleniem testu.
+i18n_wrong_pin                      ; Zły PIN
+i18n_wrong_secret					; Zły Sekret
+i18n_secret							; Sekret
+i18n_img_not_writable				; Błąd: katalog img/ jest tylko do odczytu. Skontaktuj sie z administratorem systemu.
+i18n_answers_cannot_be_zeroes		; Nie możesz tworzyć pytań z odpowiedziami '000'
+i18n_near_question					; W okolicy pytania 
+i18n_answers_not_binary_triplet		; Odpowiedzi muszą składać się z trzech cyfr binarnych, np. '011' or '101'
+i18n_in_question					; W pytaniu
+i18n_number_of_questions			; Pytań
+i18n_submit_complete_quiz			; Skończyłem i wysyłam

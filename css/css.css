@@ -1,0 +1,418 @@
+html {
+	font-size: 62.5%;
+}
+
+body {
+	max-width:800px;
+	background: #333;
+	margin:0px;
+	padding:0px;
+	font-family: "Sans";
+	font-size: 2rem;
+	color: #ddd;
+}
+h2 {
+	text-align:center;
+}
+
+
+table {
+	border-spacing: 2px 2px;
+}
+
+td {
+	border-bottom: 1px solid #555;
+	padding: 6px;
+	color: #fff;
+}
+
+th {
+	padding: 6px;
+	color: #fff;
+	font-weight: normal;
+	background: #222;
+	border: 1px solid #555;
+}
+
+img {
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	padding: 10px
+}
+
+navigation{
+	position: fixed;
+	opacity: 0.9;
+	left:0px;
+	top:0px;
+	max-width: 800px;
+	display:block;
+	text-align: center;
+	background: #89b;
+	width: 100%;
+}
+
+prev{
+	-moz-user-select: none
+	-webkit-user-select: none; 
+	user-select:none;
+	padding: 10px 15px 10px 15px;
+	background: #136;
+	float:left;
+	color: #fff;
+	cursor: pointer;
+}
+
+next{
+	-moz-user-select: none
+	-webkit-user-select: none; 
+	user-select:none;
+	padding: 10px 15px 10px 15px;
+	padding-right: 15px;
+	background:#136;
+	float:right;
+	color: #fff;
+	cursor: pointer;
+}
+
+#home {
+	float:left;
+	cursor: pointer;
+	padding: 0px 20px 0px 10px;
+	
+}
+
+prev:hover, next:hover {
+	cursor: pointer;
+	background: #800;
+}
+
+top-middle {
+	color: #fff;
+	background:#136;
+	padding: 10px 5px 10px 5px;
+	text-align: center;
+	display:inline-block;
+}
+
+question-number {
+	display:inline-block;
+	width: 40px;
+	padding: 0px;
+;
+}
+clock {
+	display:inline-block;
+	padding: 0px; 
+	width: 100px;
+}
+
+timeout { display: none; }
+
+question {
+	font-size: 2rem;
+	text-align: center;
+	padding: 15px;
+	display:block;
+}
+
+page {
+	margin-top: 40px;
+}
+
+
+answer {
+	font-size: 2rem;
+	margin: 10px 10px 0px 10px;
+	padding: 10px;
+	display: block;
+	cursor: pointer;
+}
+
+.answer_yes {
+	color: #fff;
+	background: #600;
+	border: 1px solid #200;
+	cursor: pointer;
+}
+
+.answer_no {
+	background: none;
+	border: 1px solid #444;
+	cursor: pointer;
+}
+
+.visible {
+	display: block;
+}
+
+.invisible {
+	display: none;
+}
+
+input,select {
+	font-size: 2rem;
+}
+msg, fatal, cannot {
+	z-index: 999;
+	position:fixed;
+	left:0px;
+	min-height: 30px;
+	top:0px;
+    text-align:center;
+    width:500px;
+	opacity: 0.9;
+    background-color: #063;
+    color: #fff;
+    padding: 10px;
+	background-position: 99% 1%;
+    background-repeat: no-repeat; 
+
+}
+fatal, cannot {
+    background-color: #a00;
+	padding: 20px;
+    border-radius: 2px; 
+	border: 1px solid #fff;
+	box-shadow: 0 1px 4px #000;
+}
+
+
+input[type="submit"] {
+    padding:4px 8px; 
+	margin:1px;
+    border-radius: 2px; 
+	color: #fff;
+    background:#06a;
+    border:0 none;
+    cursor:pointer;
+}
+.blink {
+	margin: 3px;
+    padding:4px 8px; 
+    border-radius: 2px; 
+	color: #fff;
+    background:#06a;
+    border:0 none;
+    cursor:pointer;
+	display: inline-block;
+    padding: 5px 8px;
+}
+#result_box {
+	background: #800;
+	width: 340px;
+	border: 1px solid #faa;
+	text-align: center;
+	display: inline-block;
+}
+
+.rlink {
+	margin: 1px 3px;
+    padding:4px 8px; 
+    border-radius: 2px; 
+	color: #fff;
+    border:0 none;
+    cursor:pointer;
+	display: inline-block;
+	background: #600;
+    padding: 5px 8px;
+}
+
+a:link, a:visited {
+	color: #fff;
+	text-decoration: none;
+}
+green, black, orange, red, nocolor,  .nocolor {
+    padding:4px 8px; 
+    border-radius: 2px; 
+	color: #fff;
+    background:#062;
+    border:0 none;
+	display: inline-block;
+    padding: 5px 8px;
+}
+black             { background:#000; }
+orange            { background:#a50; }
+red               { background:#600; }
+nocolor, .nocolor { background:none;  border: 1px solid #555; }
+
+input[type="submit"]:hover, .blink:hover, .rlink:hover, .nocolor:hover {
+	background: #c60;
+}
+
+input[type="text"], input[type="password"]  {
+    border-radius: 2px; 
+    border:0 none;
+    padding:5px 8px; 
+}
+textarea {
+    padding:5px;
+	color: #fff;
+	background: #333;
+	border: 1px solid #555;
+}
+
+teacher_body {
+	display: block;
+	padding:60px 20px;
+}
+
+teacher_menu {
+	background: #800;
+	padding: 4px;
+	position:fixed;
+	height:30px;
+	top: 0px;
+	width:100%;
+	max-width: 800px;
+	box-shadow: 0 1px 4px #400;
+}
+
+teacher_menu a {
+	display: inline-block;
+	text-decoration: none;
+	color: #fff;
+}
+
+questions_form {
+	position:fixed;
+	left:0px;
+	top:50px;
+	display:block;
+	width:600px;
+	padding:5px 5px 100px 5px;
+	text-align: center;
+}
+
+questions_preview {
+	display: block;
+	margin-left:600px;
+	width: 330px;
+}
+
+#q_textarea {
+	margin-top:10px;
+	width: 540px;
+	padding: 10px;
+	background: none;
+
+}
+
+q_howto, dropzone_form {
+	z-index: 3;
+	position:fixed;
+	left:550px;
+	top:50px;
+	width: 400px;
+	text-align: left;
+	display: inline-block;
+	padding: 5px 5px 40px 5px;
+	background: #222;
+	border: 1px solid #555;
+	box-shadow: 0 1px 4px #000;
+}
+
+dropzone_form {
+	background: #600;
+}
+
+debug_request, debug_server, debug_session, sliding_div, dd {
+	z-index: 100;
+	overflow-y: scroll;
+	height: 85%;
+	opacity: 0.95;
+	position:fixed;
+	left:0px;
+	top:0px;
+	display: none;
+	padding: 40px;
+	background: #111;
+	width: 90%;
+	border: 1px solid #555;
+	box-shadow: 0 1px 4px #000;
+}
+
+dd {
+	display: block;
+}
+
+student_menu {
+	text-align: right;
+	background: #800;
+	padding: 4px;
+	height: 30px;
+	width: 100%;
+	max-width: 800px;
+	box-shadow: 0 1px 4px #400;
+	font-size: 13px;
+	display: block;
+}
+
+student_menu a {
+	display: inline-block;
+	text-decoration: none;
+	color: #fff;
+}
+.div-yes, .div-no {
+	cursor: pointer;
+	display: inline-block;
+	padding: 10px 20px;
+	margin: 5px;
+	background-color: #600;
+	border: 1px solid #aaa;
+	border-radius: 2px;
+	cursor: pointer;
+}
+.div-no {
+	border: 1px solid #444;
+	background-color: #111;
+}
+
+.div-no:hover {
+	background-color: #600;
+	border: 1px solid #aaa;
+}
+
+total_logins {
+	border-radius: 2px;
+	display: inline-block;
+	margin: 80px 0px 10px 0px;
+	padding: 5px 10px;
+	background-color: #062;
+	border: 1px solid #383;
+}
+
+display_clock {
+	float: right;
+	display: inline-block;
+	padding: 5px 10px;
+	background-color: #222;
+	border: 1px solid #555;
+}
+
+
+helloPage {
+	font-size: 1.5rem;
+	display: block;
+	max-width: 320px;
+	padding: 10px; 
+	border: 1px solid #444;
+	margin: 10px 5px;
+}
+help:after{
+    content: "";
+    display: block;
+    background: url("qmark.svg") no-repeat;
+    width: 20px;
+    height: 20px;
+    float: right;
+    margin: 0 0px 0 6px;
+}
+
+debug_request, debug_server, debug_session, dd, fatal, cannot {
+	background-image: url("close.svg");
+	background-position: 99% 1%;
+    background-repeat: no-repeat; 
+}
+
