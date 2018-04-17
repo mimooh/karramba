@@ -100,10 +100,6 @@ function results(){/*{{{*/
 	$student_answers=$e[0];
 	$points=$e[1];
 	$details=$e[2];
-//			if($_SESSION['student_id']==13368){
-//				$points=rand(8,10);
-
-//			}
 	echo "<div id=finalGradient style='min-height:1800px; width:100%'><div id=result_box> <a href=".$_SESSION['home_url']."><img src=css/home.svg></a> Result: $points / ".count($student_answers)."<br>".$_SESSION['last_name']." </div>";
 	$_SESSION['student_results'][$_POST['randomized_id']]=$points;//to be checked later if nesesery
 		if($_POST['quiz_instance_id']==1) { 

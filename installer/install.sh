@@ -13,7 +13,6 @@ KARRAMBA_NOTIFY="user@gmail.com"
 # I have a separate tool where a new student can add himself. You can provide
 # an URL for "create a new student account" form. Nevermind otherwise.
 KARRAMBA_NEW_STUDENT_FORM_URL=""	  
-#	"https://tygrys.inf.sgsp.edu.pl/student_home/studentAdd.php"
 
 # I have a separate tool where a new student can add himself. You can provide
 # a secret for students to use "create a new student account" form. Nevermind otherwise.
