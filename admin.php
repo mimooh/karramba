@@ -1,5 +1,5 @@
 <?PHP
-session_name('karramba_admin');
+session_name(getenv("KARRAMBA_ADM_SESSION_NAME"));
 require_once("libKarramba.php");
 function teacher_login_form(){/*{{{*/
 	extract($_SESSION);
@@ -17,6 +17,13 @@ function teacher_login_form(){/*{{{*/
 	<input type=submit name=logMeIn value=$i18n_submit>
 	</center>
 	</FORM>"; 
+
+}/*}}}*/
+function already_authenticated(){/*{{{*/
+	// If we are authenticated in another system, which is indicated by ['zalogowany_id'] and the matching session_name().
+	$row=$_SESSION['krr']->query("SELECT id as teacher_id, last_name, first_name, password FROM teachers WHERE id=$1", array($_SESSION['zalogowany_id']));
+	$_SESSION+=$row[0];
+	$_SESSION['teacher_in']=1;
 
 }/*}}}*/
 function teacher_do_login(){/*{{{*/
@@ -706,6 +713,9 @@ function main() {/*{{{*/
 	echo "<link type='text/css' rel='stylesheet' href='css/admin.css' />";
 
 	if(isset($_GET['q']))  { do_logout(); }
+	if(isset($_SESSION['zalogowany_id'])) { 
+		already_authenticated();	
+	}
 
 	if(!isset($_SESSION['teacher_in'])) {
 		if(isset($_POST['logMeIn']))        { teacher_do_login(); }
@@ -737,4 +747,5 @@ function main() {/*{{{*/
 }
 /*}}}*/
 main();
+
 ?>

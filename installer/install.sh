@@ -18,6 +18,10 @@ KARRAMBA_NEW_STUDENT_FORM_URL=""
 # a secret for students to use "create a new student account" form. Nevermind otherwise.
 KARRAMBA_NEW_STUDENT_SECRET="secret"	  
 
+# If you need to share variables with another PHP system, then perhaps you want to match the session_name()
+# Otherwise you don't need it.
+KARRAMBA_ADM_SESSION_NAME='karramba_admin'
+
 # These are only needed if you choose to use a dblink to another DB containing teachers and students.
 # Navigate to "The tricky part" below to learn more
 EXTERNAL_DBNAME='x'

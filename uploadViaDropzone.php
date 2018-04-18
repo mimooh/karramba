@@ -1,5 +1,5 @@
 <?php
-session_name('karramba');
+session_name(getenv("KARRAMBA_ADM_SESSION_NAME"));
 session_start();
 
 // The image must have proper name, no spaces, no national characters, no special characters.
