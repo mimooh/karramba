@@ -22,15 +22,7 @@ KARRAMBA_NEW_STUDENT_SECRET="secret"
 # Otherwise you don't need it.
 KARRAMBA_ADM_SESSION_NAME='karramba_admin'
 
-# These are only needed if you choose to use a dblink to another DB containing teachers and students.
-# Navigate to "The tricky part" below to learn more
-EXTERNAL_DBNAME='x'
-EXTERNAL_USER='x'
-EXTERNAL_PASS='x'
-EXTERNAL_HOST='127.0.0.1'
-
 # End of configuration. Run this shell script to setup the project. Then restart apache so that www user rereads his environent.
-
 
 
 
@@ -54,6 +46,7 @@ echo "export KARRAMBA_LANG='$KARRAMBA_LANG'" >> $temp
 echo "export KARRAMBA_NOTIFY='$KARRAMBA_NOTIFY'" >> $temp
 echo "export KARRAMBA_NEW_STUDENT_FORM_URL='$KARRAMBA_NEW_STUDENT_FORM_URL'" >> $temp
 echo "export KARRAMBA_NEW_STUDENT_SECRET='$KARRAMBA_NEW_STUDENT_SECRET'" >> $temp
+echo "export KARRAMBA_ADM_SESSION_NAME='$KARRAMBA_ADM_SESSION_NAME'" >> $temp
 sudo cp $temp /etc/apache2/envvars
 rm $temp
 
@@ -85,50 +78,23 @@ CREATE USER $KARRAMBA_DB_USER WITH PASSWORD '$KARRAMBA_DB_PASS';
 
 \c karramba;
 
--- The tricky part. You need to somehow provide the following 3 views. 
--- One way is to just create these 3 TABLES, filling them with data, and creating VIEWS.	
--- Another way is to use the CREATE EXTENSION dblink method below to connect to some other students/teachers DB in your institution.
--- 	
--- 	VIEW students:
---
--- 	  id  |    first_name    |         last_name         |   index    | group_id |  password  
--- 	------+------------------+---------------------------+------------+----------+--------------------
--- 	 2104 | Maciej           | Sobiechowski              |      11036 |     1030 |  bf7e74a46c11e45ec
--- 	 2105 | Artur            | Sroka                     |      11037 |     1030 |  z2@49d0cc0e00d652
--- 	 ...  | .....			 | ....						 |      ..... |     .... |  .................
--- 
--- 	
--- 	VIEW groups:
---
--- 	  id  |     group_name      
--- 	------+---------------------
--- 	    1 | Erasmus
--- 	  	3 | ND-BW1
--- 	  ... | ...
---
--- 	
--- 	
--- 	VIEW teachers:
---
--- 	 id  | first_name  |        last_name        |        email        |       password       
--- 	-----+-------------+-------------------------+---------------------+----------------------
--- 	 614 | Marta       | Adamowska               | m@gmail.com 		   | bf7e74a46c11e45ec
--- 	 663 | Tomasz      | Wdowski 			     | z@gmail.com 		   | z2@49d0cc0e00d652
--- 	 ... | ........    | ..........              | ........ 		   | ..................
---
--- 	
+CREATE TABLE teachers (id SERIAL PRIMARY KEY, first_name text, last_name text, email text, password text);
+CREATE TABLE students (id SERIAL PRIMARY KEY, first_name text, last_name text, index int, group_id int, password text);
+CREATE TABLE groups (id SERIAL PRIMARY KEY, group_name);
 
+INSERT INTO teachers (first_name , last_name , email , password) VALUES ('Jaimie' , 'Lannister' , 'a@b.com' , '1');
+INSERT INTO teachers (first_name , last_name , email , password) VALUES ('Tyrion' , 'Lannister' , 'a@b.com' , '1');
+INSERT INTO students (first_name , last_name, index , group_id , password) VALUES ('Jon' , 'Snow'  , 1, 9991 , 'a@b.com' , '1');
+INSERT INTO students (first_name , last_name, index , group_id , password) VALUES ('Ned' , 'Stark' , 1, 9992 , 'a@b.com' , '1');
+INSERT INTO groups (id, group_name) VALUES (1, 'North');
+
+-- The above are fake teachers, students and groups. In production you could use CREATE EXTENSION dblink:
 -- CREATE EXTENSION dblink;
--- 
 -- CREATE VIEW students AS SELECT id, imie AS first_name, nazwisko AS last_name, index, grupa AS group_id, index AS password
--- FROM dblink('dbname=$EXTERNAL_DBNAME  host=$EXTERNAL_HOST user=$EXTERNAL_USER password=$EXTERNAL_PASS', 'SELECT id, imie, nazwisko, index, grupa, index FROM studenci')  as foo (id integer, imie text, nazwisko text, index integer, grupa integer, password integer);
--- 
--- CREATE VIEW groups as SELECT id, grupa as group_name from dblink('dbname=$EXTERNAL_DBNAME  host=$EXTERNAL_HOST user=$EXTERNAL_USER password=$EXTERNAL_PASS', 'SELECT id, grupa FROM grupy')  as foo (id integer, grupa text);
--- 
+-- FROM dblink('dbname=EXTERNAL_DBNAME  host=EXTERNAL_HOST user=EXTERNAL_USER password=EXTERNAL_PASS', 'SELECT id, imie, nazwisko, index, grupa, index FROM studenci')  as foo (id integer, imie text, nazwisko text, index integer, grupa integer, password integer);
+-- CREATE VIEW groups as SELECT id, grupa as group_name from dblink('dbname=EXTERNAL_DBNAME  host=EXTERNAL_HOST user=EXTERNAL_USER password=EXTERNAL_PASS', 'SELECT id, grupa FROM grupy')  as foo (id integer, grupa text);
 -- CREATE VIEW teachers as SELECT id, imie as first_name, nazwisko as last_name, login as email, haslo as password
--- from dblink('dbname=$EXTERNAL_DBNAME  host=$EXTERNAL_HOST user=$EXTERNAL_USER password=$EXTERNAL_PASS', 'SELECT id, imie, nazwisko, login, haslo  FROM pracownicy WHERE dydaktyk is true')  as foo (id integer, imie text, nazwisko text, login text, haslo text);
-
--- End of the tricky part
+-- from dblink('dbname=EXTERNAL_DBNAME  host=EXTERNAL_HOST user=EXTERNAL_USER password=EXTERNAL_PASS', 'SELECT id, imie, nazwisko, login, haslo  FROM pracownicy WHERE dydaktyk is true')  as foo (id integer, imie text, nazwisko text, login text, haslo text);
 
 
 CREATE TABLE quizes (
@@ -287,11 +253,10 @@ psql -qAt karramba -c "SELECT table_name FROM information_schema.views WHERE tab
 done
 
 #}}}
-
+# final#{{{
 echo;
-
 echo "Restarting apache..."
-
 sudo service apache2 restart
 sudo chown -R www-data ../img/
 sudo chmod -R 775 ../img/
+#}}}
