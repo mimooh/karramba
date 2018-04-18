@@ -265,20 +265,28 @@ COMMENT ON column randomized_quizes.questions_vector is 'vector of questions_id 
 COMMENT ON column randomized_quizes.order_vector is 'shuffled order of answers eg 021,012,201 ';
 COMMENT ON column randomized_quizes.correct_answers_vector is 'vector of correct answers for shuffled questions 101,001,111';
 
-REVOKE ALL PRIVILEGES ON DATABASE karramba from $KARRAMBA_DB_USER;
-REVOKE ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public from $KARRAMBA_DB_USER;
-
-GRANT ALL PRIVILEGES ON DATABASE karramba to karramba;
-GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO karramba;
-GRANT ALL PRIVILEGES  ON ALL SEQUENCES IN SCHEMA public TO karramba;
-
-GRANT ALL PRIVILEGES ON DATABASE karramba TO $KARRAMBA_DB_USER;
-GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO $KARRAMBA_DB_USER;
-GRANT ALL PRIVILEGES  ON ALL SEQUENCES IN SCHEMA public TO $KARRAMBA_DB_USER;
+ALTER USER $KARRAMBA_DB_USER WITH PASSWORD '$KARRAMBA_DB_PASS';
+ALTER DATABASE karramba OWNER TO $KARRAMBA_DB_USER;
 
 EOF
-echo;
+
+psql -qAt karramba -c "SELECT tablename FROM pg_tables WHERE schemaname = 'public';" | while read i; do
+	psql karramba -c "ALTER TABLE $i OWNER TO $KARRAMBA_DB_USER;" 
+done
+
+psql -qAt karramba -c "SELECT sequence_name FROM information_schema.sequences WHERE sequence_schema= 'public';" | while read i; do
+	psql karramba -c "ALTER TABLE $i OWNER TO $KARRAMBA_DB_USER;" 
+done
+
+psql -qAt karramba -c "SELECT table_name FROM information_schema.views WHERE table_schema= 'public';" | while read i; do
+	psql karramba -c "ALTER TABLE $i OWNER TO $KARRAMBA_DB_USER;" 
+done
+
 #}}}
+
+echo;
+
+echo "Restarting apache..."
 
 sudo service apache2 restart
 sudo chown -R www-data ../img/
