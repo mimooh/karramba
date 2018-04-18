@@ -20,7 +20,7 @@ KARRAMBA_NEW_STUDENT_SECRET="secret"
 
 # These are only needed if you choose to use a dblink to another DB containing teachers and students.
 # Navigate to "The tricky part" below to learn more
-EXTERNAL_DB='x'
+EXTERNAL_DBNAME='x'
 EXTERNAL_USER='x'
 EXTERNAL_PASS='x'
 EXTERNAL_HOST='127.0.0.1'
@@ -114,15 +114,15 @@ CREATE USER $KARRAMBA_DB_USER WITH PASSWORD '$KARRAMBA_DB_PASS';
 --
 -- 	
 
-CREATE EXTENSION dblink;
-
-CREATE VIEW students AS SELECT id, imie AS first_name, nazwisko AS last_name, index, grupa AS group_id, index AS password
-FROM dblink('dbname=$EXTERNAL_DB  host=$EXTERNAL_HOST user=$EXTERNAL_USER password=$EXTERNAL_PASS', 'SELECT id, imie, nazwisko, index, grupa, index FROM studenci')  as foo (id integer, imie text, nazwisko text, index integer, grupa integer, password integer);
-
-CREATE VIEW groups as SELECT id, grupa as group_name from dblink('dbname=$EXTERNAL_DB  host=$EXTERNAL_HOST user=$EXTERNAL_USER password=$EXTERNAL_PASS', 'SELECT id, grupa FROM grupy')  as foo (id integer, grupa text);
-
-CREATE VIEW teachers as SELECT id, imie as first_name, nazwisko as last_name, login as email, haslo as password
-from dblink('dbname=$EXTERNAL_DB  host=$EXTERNAL_HOST user=$EXTERNAL_USER password=$EXTERNAL_PASS', 'SELECT id, imie, nazwisko, login, haslo  FROM pracownicy WHERE dydaktyk is true')  as foo (id integer, imie text, nazwisko text, login text, haslo text);
+-- CREATE EXTENSION dblink;
+-- 
+-- CREATE VIEW students AS SELECT id, imie AS first_name, nazwisko AS last_name, index, grupa AS group_id, index AS password
+-- FROM dblink('dbname=$EXTERNAL_DBNAME  host=$EXTERNAL_HOST user=$EXTERNAL_USER password=$EXTERNAL_PASS', 'SELECT id, imie, nazwisko, index, grupa, index FROM studenci')  as foo (id integer, imie text, nazwisko text, index integer, grupa integer, password integer);
+-- 
+-- CREATE VIEW groups as SELECT id, grupa as group_name from dblink('dbname=$EXTERNAL_DBNAME  host=$EXTERNAL_HOST user=$EXTERNAL_USER password=$EXTERNAL_PASS', 'SELECT id, grupa FROM grupy')  as foo (id integer, grupa text);
+-- 
+-- CREATE VIEW teachers as SELECT id, imie as first_name, nazwisko as last_name, login as email, haslo as password
+-- from dblink('dbname=$EXTERNAL_DBNAME  host=$EXTERNAL_HOST user=$EXTERNAL_USER password=$EXTERNAL_PASS', 'SELECT id, imie, nazwisko, login, haslo  FROM pracownicy WHERE dydaktyk is true')  as foo (id integer, imie text, nazwisko text, login text, haslo text);
 
 -- End of the tricky part
 
