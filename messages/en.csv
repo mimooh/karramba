@@ -71,11 +71,11 @@ i18n_wrong_answer                   ; Not fully correct
 i18n_didnt_complete                 ; Didn't complete
 i18n_select_quiz                    ; Run a new  quiz
 i18n_empty_results                  ; No result
-i18n_help_pin                       ; Students need to know the PIN to access your test. Announce the PIN in the classroom. 
+i18n_help_pin                       ; Students need to know the PIN to access your quiz. Announce the PIN in the classroom. 
 i18n_help_secret					; Ask your teacher. He has the Secret under "Students" in his Karramba menu.
 i18n_help_what_is_secret			; Some students may not yet have the accounts in Karramba. If they add the accounts and they ask, tell them the Secret.
-i18n_help_active_until              ; Students can log up to this time. This is not any restriction on when students should submit their answers! The quiz will be deactivated automatically if you do not deactivate it. The time is compared against the clock displayed nearby.
-i18n_help_select_groups             ; Choose the quiz and the groups and Activate the quiz. Students will be allowed to login within 20 minutes from the time the test is activated.
+i18n_help_active_until              ; Students can login up to this time. This is not any restriction on when students should submit their answers! The quiz will be deactivated automatically if you do not deactivate it. The time is compared against the clock displayed nearby.
+i18n_help_select_groups             ; Choose the quiz and the groups and Activate the quiz. Students will be allowed to login within 20 minutes from the time the quiz is activated.
 i18n_help_select_owners				; You can share this quiz with other teachers. The selected teachers can modify questions and answers in this quiz and can manage how the quiz is shared.
 i18n_wrong_pin                      ; Wrong PIN
 i18n_wrong_secret					; Wrong Secret
@@ -87,3 +87,5 @@ i18n_answers_not_binary_triplet		; Answers must be a binary triplet, e.g. '011' 
 i18n_in_question					; In question
 i18n_number_of_questions			; Questions
 i18n_submit_complete_quiz			; Submit the complete quiz
+i18n_teacher						; Teacher
+i18n_first_two_letters				; First 2 letters

@@ -7,8 +7,10 @@ function teacher_login_form(){/*{{{*/
 	echo "
 	<FORM METHOD=POST>
 	<center>
-	<br><br><br><br>
-	Login (godzinkowy)<br>
+	<br><br>
+	<h2>$i18n_teacher login</h2>
+	<br><br>
+	Email<br>
 	<input type=text name=teacher_email size=30> 
 	<br><br>
 	$i18n_password <br>    
@@ -133,17 +135,6 @@ function run_quizes(){/*{{{*/
 		}
 		echo "</tbody></table>";
 	}
-	echo "
-	<div style='margin-top: 100px; float:right'>
-	Możesz testować <br>na grupie 0Lannisters
-		<table>
-		<tr><th>Student					<th>hasło
-		<tr><td>Lannister Jamie<td>1
-		<tr><td>Lannister Cercei<td>2
-		<tr><td>Lannister Tyrion<td>3
-		</table>
-	</div>
-	";
 
 }/*}}}*/
 function final_animation() {/*{{{*/
@@ -628,7 +619,8 @@ function group_info() {/*{{{*/
 }
 /*}}}*/
 function students_list() {/*{{{*/
-	// Secret integrates us with a separate system, you don't need it.
+	// KARRAMBA_NEW_STUDENT_SECRET is a token which students need to create a new account
+	// You most likely don't need it.
 	
 	extract($_SESSION);
 	$r=$krr->query("SELECT g.group_name, s.last_name, s.first_name, s.index  FROM students s, groups g WHERE g.id=s.group_id ORDER BY g.group_name, s.last_name");
@@ -643,9 +635,8 @@ function students_list() {/*{{{*/
 		$view.="<tr><td>".$v['last_name']." ".$v['first_name']."<td>".$v['index'];
 	}
 
-
-	if(isset($_SESSION['karramba_secret'])) { 
-		echo "<table><tr><td>$i18n_secret:<td><h1><help title='$i18n_help_what_is_secret'>$karramba_secret</help></h1></table>";
+	if(!empty(getenv("KARRAMBA_NEW_STUDENT_SECRET"))) { 
+		echo "<table><tr><td>$i18n_secret:<td><h1><help title='$i18n_help_what_is_secret'>".getenv("KARRAMBA_NEW_STUDENT_SECRET")."</help></h1></table>";
 	}
 	echo "<table>$view</table>";
 }

@@ -12,18 +12,18 @@ function login_form(){/*{{{*/
 	<center>
 
 	$i18n_last_name<br>
-	<input type=text  id='inputStudentLogin' size=40> 
+	<input type=text  id='inputStudentLogin' size=40 placeholder='$i18n_first_two_letters ...'> 
 	<br><br>
 	$i18n_password <br>    
 
-	<input size=40 type=text name='password' autocomplete='off' > 
+	<input size=40 type=text name='password' autocomplete='off'> 
 	<input type=hidden id='inputHiddenStudentId' name=studentIdFromLogin> <br><br>
 	<input type=submit name=logMeIn value=$i18n_submit><br><br>
 	<a style='font-size:11px' href=".getenv("KARRAMBA_NEW_STUDENT_FORM_URL").">New student?</a>
 	<br><br>
 	<img src=img/karramba.png><br>
 	<br><br><br><br><br>
-	<a href=admin.php class=rlink>Admin (wykładowca)</a><br>
+	<a href=admin.php class=rlink>$i18n_teacher login</a><br>
 	</center>
 	</form>"; 
 

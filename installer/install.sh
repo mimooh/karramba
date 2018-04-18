@@ -16,7 +16,7 @@ KARRAMBA_NEW_STUDENT_FORM_URL=""
 
 # I have a separate tool where a new student can add himself. You can provide
 # a secret for students to use "create a new student account" form. Nevermind otherwise.
-KARRAMBA_NEW_STUDENT_SECRET="secret"	  
+KARRAMBA_NEW_STUDENT_SECRET=""	  
 
 # If you need to share variables with another PHP system, then perhaps you want to match the session_name()
 # Otherwise you don't need it.
@@ -80,12 +80,12 @@ CREATE USER $KARRAMBA_DB_USER WITH PASSWORD '$KARRAMBA_DB_PASS';
 
 CREATE TABLE teachers (id SERIAL PRIMARY KEY, first_name text, last_name text, email text, password text);
 CREATE TABLE students (id SERIAL PRIMARY KEY, first_name text, last_name text, index int, group_id int, password text);
-CREATE TABLE groups (id SERIAL PRIMARY KEY, group_name);
+CREATE TABLE groups (id SERIAL PRIMARY KEY, group_name text);
 
-INSERT INTO teachers (first_name , last_name , email , password) VALUES ('Jaimie' , 'Lannister' , 'a@b.com' , '1');
-INSERT INTO teachers (first_name , last_name , email , password) VALUES ('Tyrion' , 'Lannister' , 'a@b.com' , '1');
-INSERT INTO students (first_name , last_name, index , group_id , password) VALUES ('Jon' , 'Snow'  , 1, 9991 , 'a@b.com' , '1');
-INSERT INTO students (first_name , last_name, index , group_id , password) VALUES ('Ned' , 'Stark' , 1, 9992 , 'a@b.com' , '1');
+INSERT INTO teachers (first_name , last_name , email , password) VALUES ('Jaimie' , 'Lannister' , 'a@com' , '1');
+INSERT INTO teachers (first_name , last_name , email , password) VALUES ('Tyrion' , 'Lannister' , 'b@com' , '1');
+INSERT INTO students (first_name , last_name, index , group_id , password) VALUES ('Jon' , 'Snow'  ,  9991 , 1 , '1');
+INSERT INTO students (first_name , last_name, index , group_id , password) VALUES ('Ned' , 'Stark' ,  9992 , 1 , '1');
 INSERT INTO groups (id, group_name) VALUES (1, 'North');
 
 -- The above are fake teachers, students and groups. In production you could use CREATE EXTENSION dblink:
@@ -259,4 +259,6 @@ echo "Restarting apache..."
 sudo service apache2 restart
 sudo chown -R www-data ../img/
 sudo chmod -R 775 ../img/
+echo "Default student: Snow Jon, password: 1"
+echo "Default teacher: a@com, password: 1"
 #}}}

@@ -88,3 +88,5 @@ i18n_answers_not_binary_triplet		; Odpowiedzi muszą składać się z trzech cyf
 i18n_in_question					; W pytaniu
 i18n_number_of_questions			; Pytań
 i18n_submit_complete_quiz			; Skończyłem i wysyłam
+i18n_teacher						; Wykładowca
+i18n_first_two_letters			    ; Dwie pierwsze litery

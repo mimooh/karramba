@@ -132,9 +132,11 @@ function main() {/*{{{*/
 	menu();
 
 	if(isset($_POST['student_answers'])){
-		should_we_accept_quiz_submit(); do_we_have_anything_to_display(); results();
+		should_we_accept_quiz_submit(); 
+		do_we_have_anything_to_display(); 
+		results();
 	}
-	$_SESSION['krr']->debugKarramba();
+	#$_SESSION['krr']->debugKarramba();
 }
 /*}}}*/
 main();
