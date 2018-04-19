@@ -51,18 +51,18 @@ sudo cp $temp /etc/apache2/envvars
 rm $temp
 
 [ "X$1" == "Xclear" ] && { 
-	echo "sudo -u postgres psql -c \"DROP DATABASE $KARRAMBA_DB_USER\"";
+	echo "sudo -u postgres psql -c \"DROP DATABASE karramba\"";
 	echo "sudo -u postgres psql -c \"DROP USER $KARRAMBA_DB_USER\"";
 	echo "enter or ctrl+c";
 	read;
-	sudo -u postgres psql -c "DROP DATABASE $KARRAMBA_DB_USER";
+	sudo -u postgres psql -c "DROP DATABASE karramba";
 	sudo -u postgres psql -c "DROP USER $KARRAMBA_DB_USER";
 }
 
 sudo -u postgres psql -lqt | cut -d \| -f 1 | grep -qw 'karramba' && { 
 	echo ""
 	echo "karramba already exists in psql. You may wish to call";
-	echo "DROP DATABASE $KARRAMBA_DB_USER; DROP USER $KARRAMBA_DB_USER" 
+	echo "DROP DATABASE karramba; DROP USER $KARRAMBA_DB_USER" 
 	echo "by running:"
 	echo ""
 	echo "	bash install.sh clear";
