@@ -1,6 +1,10 @@
 #!/bin/bash
 
 # All configuration goes to /etc/apache2/envvars (www user environment). We create KARRAMBA* vars there.
+# If you are on a hosting server with users that cannot be trust and/or if you cannot write to /etc/apache2/envvars
+# then you need to find your way to propagate these variables for www-data user. Or just make them constants in
+# karramba code.
+
 KARRAMBA_DB_USER='karramba'  
 KARRAMBA_DB_PASS='secret'  
 KARRAMBA_DB_HOST='127.0.0.1'  
