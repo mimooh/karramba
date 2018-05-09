@@ -393,6 +393,19 @@ function validate_quiz_configuration() {/*{{{*/
 	}
 }
 /*}}}*/
+function htmlspecialchars_minus_img_src($item) {/*{{{*/
+	// karramba transforms 
+	//		|| img.png 
+	// into 
+	//		<br><img src=img.png>
+	// We won't them to be html and don't break with &lt; codes
+	if(preg_match("/\<br\><img src=/", $item)) { 
+		return $item;
+	} else {
+		return htmlspecialchars($item);
+	}
+}
+/*}}}*/
 function quiz_update() {/*{{{*/
 	extract($_SESSION);
 	$_SESSION['krr']->process_grades_thresholds($_POST['grades_thresholds']);
@@ -408,7 +421,7 @@ function quiz_update() {/*{{{*/
 			$q[0]=trim($z[0])."<br>$img";
 		}
 		if(validate_quiz_question($q,$q_id) == 'err') { $err=1; break; }
-		$collect[]=array_map('htmlspecialchars', array($q[0], $q[1], $q[2], $q[3], $q[4]));
+		$collect[]=array_map('htmlspecialchars_minus_img_src', array($q[0], $q[1], $q[2], $q[3], $q[4]));
 	}
 
 	if(!isset($err)) {
