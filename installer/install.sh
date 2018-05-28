@@ -26,6 +26,10 @@ KARRAMBA_NEW_STUDENT_SECRET=""
 # Otherwise you don't need it.
 KARRAMBA_ADM_SESSION_NAME='karramba_admin'
 
+# If students passwords are composed of digits only, you may set this to one.
+# In android we can set the context keyboard to numbers then.
+KARRAMBA_STUDENT_INT_PASS=0
+
 # End of configuration. Run this shell script to setup the project. Then restart apache so that www user rereads his environent.
 
 
@@ -51,6 +55,7 @@ echo "export KARRAMBA_NOTIFY='$KARRAMBA_NOTIFY'" >> $temp
 echo "export KARRAMBA_NEW_STUDENT_FORM_URL='$KARRAMBA_NEW_STUDENT_FORM_URL'" >> $temp
 echo "export KARRAMBA_NEW_STUDENT_SECRET='$KARRAMBA_NEW_STUDENT_SECRET'" >> $temp
 echo "export KARRAMBA_ADM_SESSION_NAME='$KARRAMBA_ADM_SESSION_NAME'" >> $temp
+echo "export KARRAMBA_STUDENT_INT_PASS='$KARRAMBA_STUDENT_INT_PASS'" >> $temp
 sudo cp $temp /etc/apache2/envvars
 rm $temp
 

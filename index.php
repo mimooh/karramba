@@ -6,6 +6,12 @@ function login_form(){/*{{{*/
 	// KARRAMBA_NEW_STUDENT_FORM_URL comes from /etc/apache2/envvars
 	extract($_SESSION);
 
+	if(empty(getenv("KARRAMBA_STUDENT_INT_PASS"))) { 
+		$type='text';
+	} else {
+		$type='number';
+	}
+
 	echo "
 	<form method=POST>
 	<br>
@@ -16,7 +22,7 @@ function login_form(){/*{{{*/
 	<br><br>
 	$i18n_password <br>    
 
-	<input size=40 type=text name='password' autocomplete='off'> 
+	<input size=40 type=$type name='password' autocomplete='off'> 
 	<input type=hidden id='inputHiddenStudentId' name=studentIdFromLogin> <br><br>
 	<input type=submit name=logMeIn value=$i18n_submit><br><br>
 	<a style='font-size:11px' href=".getenv("KARRAMBA_NEW_STUDENT_FORM_URL").">New student?</a>
