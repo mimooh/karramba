@@ -21,11 +21,14 @@ function teacher_login_form(){/*{{{*/
 	</FORM>"; 
 
 }/*}}}*/
-function already_authenticated(){/*{{{*/
-	// If we are authenticated in another system, which is indicated by ['user_id'] and the matching session_name().
-	$row=$_SESSION['krr']->query("SELECT id as teacher_id, last_name, first_name, password FROM teachers WHERE id=$1", array($_SESSION['user_id']));
-	$_SESSION+=$row[0];
-	$_SESSION['teacher_in']=1;
+function check_external_authentication(){/*{{{*/
+	// We may be authenticated in another system, which is indicated by ['user_id'] and the matching session_name().
+	// But check here if we are really ok
+	$row=$_SESSION['krr']->query("SELECT id as teacher_id, last_name, first_name FROM teachers WHERE id=$1", array($_SESSION['user_id']));
+	if(!empty($row[0]['last_name'])) { 
+		$_SESSION+=$row[0];
+		$_SESSION['teacher_in']=1;
+	} 
 
 }/*}}}*/
 function teacher_do_login(){/*{{{*/
@@ -717,8 +720,8 @@ function main() {/*{{{*/
 	echo "<link type='text/css' rel='stylesheet' href='css/admin.css' />";
 
 	if(isset($_GET['q']))  { do_logout(); }
-	if(isset($_SESSION['user_id'])) { 
-		already_authenticated();	
+	if(isset($_SESSION['user_id']) and empty($_SESSION['teacher_in'])) { 
+		check_external_authentication();	
 	}
 
 	if(!isset($_SESSION['teacher_in'])) {
