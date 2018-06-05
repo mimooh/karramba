@@ -28,8 +28,6 @@ function login_form(){/*{{{*/
 	<a style='font-size:11px' href=".getenv("KARRAMBA_NEW_STUDENT_FORM_URL").">New student?</a>
 	<br><br>
 	<img src=img/karramba.png><br>
-	<br><br><br><br><br>
-	<a href=admin.php class=rlink>$i18n_teacher login</a><br>
 	</center>
 	</form>"; 
 
