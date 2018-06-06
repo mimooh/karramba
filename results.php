@@ -3,7 +3,7 @@ require 'vendor/autoload.php';
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
-function produce_xls($data) { 
+function produce_xls($data) { /*{{{*/
 	$spreadsheet = new Spreadsheet();
 	$spreadsheet->getActiveSheet()->fromArray(
 			$data,  // The data to set
@@ -32,6 +32,7 @@ $arrayData = [
 	['work',   'in',   'progress'],
 	['work',   'in',   'progress'],
 ];
+/*}}}*/
 
 produce_xls($arrayData);
 
