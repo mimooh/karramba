@@ -23,13 +23,14 @@ function produce_xls($data) {
 
 	$writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
 	$writer->save('php://output');
+	exit;
 }
 
 $arrayData = [
-	['Q1',   12,   15,   21],
-	['Q2',   56,   73,   86],
-	['Q3',   52,   61,   69],
-	['Q4',   30,   32,    0],
+	['work',   'in',   'progress'],
+	['work',   'in',   'progress'],
+	['work',   'in',   'progress'],
+	['work',   'in',   'progress'],
 ];
 
 produce_xls($arrayData);
