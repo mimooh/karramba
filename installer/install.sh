@@ -264,6 +264,14 @@ done
 #}}}
 # final#{{{
 echo;
+
+echo "Installing xls producer";
+sudo apt-get install composer php-xml php7.0-gd php7.0-mbstring php-zip
+cd ..
+composer require phpoffice/phpspreadsheet
+
+
+
 echo "Restarting apache..."
 sudo service apache2 restart
 sudo chown -R www-data ../img/
