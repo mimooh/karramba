@@ -151,10 +151,15 @@ class karramba {/*{{{*/
 				$score_str="+".number_format((float)$score, 1, '.', '');
 				$color="green";
 			} elseif($correct_answers[$i]!=$student_answers[$i]) {
-				$score=-0.5;
+				# $score=-0.5;
+				# $total_points+=$score;
+				# $score_str=number_format((float)$score, 1, '.', '');
+				# $color="red";
+
+				$score=0;
 				$total_points+=$score;
-				$score_str=number_format((float)$score, 1, '.', '');
-				$color="red";
+				$score_str="+".number_format((float)$score, 1, '.', '');
+				$color="nocolor";
 			}
 			$total_points_str=number_format((float)$total_points, 1, '.', '');
 			$details.="<tr><th>".join(
