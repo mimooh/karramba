@@ -140,26 +140,16 @@ class karramba {/*{{{*/
 		$details='';
 		$total_points=0;
 		for($i=0; $i<count($student_answers); $i++) {
-			if($student_answers[$i]=='000') {
-				$score=0;
-				$total_points+=$score;
-				$score_str="+".number_format((float)$score, 1, '.', '');
-				$color="nocolor";
-			} elseif($correct_answers[$i]==$student_answers[$i]) {
+			if($correct_answers[$i]==$student_answers[$i]) {
 				$score=1;
 				$total_points+=$score;
 				$score_str="+".number_format((float)$score, 1, '.', '');
 				$color="green";
-			} elseif($correct_answers[$i]!=$student_answers[$i]) {
-				# $score=-0.5;
-				# $total_points+=$score;
-				# $score_str=number_format((float)$score, 1, '.', '');
-				# $color="red";
-
+			} else { 
 				$score=0;
 				$total_points+=$score;
 				$score_str="+".number_format((float)$score, 1, '.', '');
-				$color="nocolor";
+				$color="red";
 			}
 			$total_points_str=number_format((float)$total_points, 1, '.', '');
 			$details.="<tr><th>".join(

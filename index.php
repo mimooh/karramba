@@ -55,21 +55,6 @@ function do_logout(){/*{{{*/
 	$_SESSION=array();
 	header("Location: $url");
 }/*}}}*/
-function hello() {/*{{{*/
-	extract($_SESSION);
-	echo "<helloPage>";
-	echo "<center>$i18n_multiple_choice_quiz</center><br>";
-	echo "<table>";
-	echo "<tr><td colspan=2>$i18n_scoring_of_the_answers:";
-	echo "<tr><td>$i18n_fully_correct_answer<td>+1.0";
-	echo "<tr><td>$i18n_wrong_answer<td>−0.5";
-	echo "<tr><td>$i18n_no_answer<td>+0.0";
-	echo "</table>";
-	echo "<br><small>$i18n_you_must_belong_to_group</small>";
-	echo "</helloPage>";
-
-}
-/*}}}*/
 function check_cheetaz(){/*{{{*/
 	//This function checks if someone has submited test on students behalf from another phone (outside the class room) - 
 	//We are checking the HTTP_USER_AGENT variable
@@ -85,7 +70,7 @@ function check_cheetaz(){/*{{{*/
 /*}}}*/
 function choose_quiz() {/*{{{*/
 	// After student is logged he needs to see the quizes for him
-	hello();
+	echo "<br>";
 	$hanging=$_SESSION['krr']->query("SELECT randomized_id,quiz_instance_id,group_name,quiz_name,student_deadline FROM r WHERE student_id=$1 AND student_finished IS NULL", array($_SESSION['student_id']));
 	if(!empty($hanging[0])) {
 		extract($hanging[0]);
