@@ -31,16 +31,15 @@ function animation_on_quiz_complete($points) {/*{{{*/
 	// to check the final animations on participants devices when they are leaving the classroom.
 	// Well, they have their options to hack against our solution, but then it will be time for
 	// our move, depending on what they have invented.
+
+	# psql karramba -c "SELECT * FROM quizes_instances where final_anim_top0 is not null"
+
 	extract($_SESSION['krr']->query("SELECT * FROM quizes_instances WHERE id=$1 ", array($_POST['quiz_instance_id']))[0]);
 
 	echo "
 	<style>
 		#finalGradient {
 			background-color: $final_anim_color0;
-			animation: finalGradient ${final_anim_time}s infinite alternate;
-		}
-		@keyframes finalGradient {
-			100% {background-color: $final_anim_color1;}
 		}
 
 		#movingObject{
@@ -49,6 +48,7 @@ function animation_on_quiz_complete($points) {/*{{{*/
 			top:${final_anim_top0}px;
 			background-color: $final_anim_color1;
 			border: 1px solid #fff;
+			font-size:40px;
 			animation: movingObject  ${final_anim_time}s infinite alternate;
 		}
 		@keyframes movingObject {
@@ -56,11 +56,34 @@ function animation_on_quiz_complete($points) {/*{{{*/
 			50%  { left:${final_anim_left1}px ; top:${final_anim_top1}px ; }
 			100% { left:${final_anim_left2}px ; top:${final_anim_top2}px ; }
 		}
+		rect1 {
+			position:fixed;
+			left: ${final_anim_left2}px;
+			top: ${final_anim_left1}px;
+			display: block;
+			width: ${final_anim_left0}px;
+			height: ${final_anim_left1}px;
+			min-height: 50px;
+			min-width: 50px;
+			background-color: $final_anim_color1;
+			opacity: 0.$final_anim_time;
+		}
+		pins {
+			font-size: 20px;
+			opacity: 0.2;
+			display: inline-block;
+			color: #fff;
+			padding: 2px; 
+		}
 
 	</style>
-	<div id=movingObject style='text-align: center; height:100px; width:100px'><br>$points</div>
-	
+	<div id=movingObject style='padding:20px; text-align: center'>$pin</div>
+	<rect1></rect1>
 	";
+
+	for($i=0; $i<500; $i++) { 
+		echo "<pins>$pin</pins>";
+	}
 }
 /*}}}*/
 function points2grade($points) {/*{{{*/

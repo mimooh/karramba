@@ -148,12 +148,12 @@ function final_animation() {/*{{{*/
 		'final_anim_color0' => join(array("rgb(", rand(0,255), ",", rand(0,255), ",", rand(0,255), ")")),
 		'final_anim_color1' => join(array("rgb(", rand(0,255), ",", rand(0,255), ",", rand(0,255), ")")),
 		'final_anim_time'   => rand(1,6),
-		'final_anim_left0'  => rand(0,800),
-		'final_anim_left1'  => rand(0,800),
-		'final_anim_left2'  => rand(0,800),
-		'final_anim_top0'   => rand(0,800),
-		'final_anim_top1'   => rand(0,800),
-		'final_anim_top2'   => rand(0,800)
+		'final_anim_left0'  => rand(0,300),
+		'final_anim_left1'  => rand(0,300),
+		'final_anim_left2'  => rand(0,300),
+		'final_anim_top0'   => rand(0,300),
+		'final_anim_top1'   => rand(0,300),
+		'final_anim_top2'   => rand(0,300)
 	);
 
 }
