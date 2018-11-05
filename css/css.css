@@ -370,8 +370,7 @@ student_menu a {
 }
 
 .div-no:hover {
-	background-color: #600;
-	border: 1px solid #aaa;
+	opacity: 0.5;
 }
 
 total_logins {

@@ -97,6 +97,7 @@ function select_groups_form() {/*{{{*/
 			<input input type=submit value='".$_SESSION['i18n_activate_quiz']."' id='finished_selecting_groups'>
 			<input input type=submit value='".$_SESSION['i18n_cancel']."'>
 		</div>
+		
 		<input type=hidden name=run_quiz>
 		<input class=groups_collector_ids type=hidden name=active_groups_ids value=''>
 		<input class=quizes_collector_ids type=hidden name=active_quizes_ids value=''>
@@ -320,9 +321,11 @@ function display_configured_quiz($textarea) { /*{{{*/
 			<textarea id=q_textarea name=questions_textarea cols=60 rows=20>$textarea</textarea><br>
 			<center>
 			<table style='background-color: #044;'>
-			<tr><td>$i18n_how_many_questions_long: <td><input type=text name=how_many size=1 value='$how_many' required>
+			<tr><td>$i18n_how_many_questions_long: <td><input type=text name=how_many size=1 value='$how_many' required> 
+			<td> sections: <input type=text size=1 name=sections><help title='Virtual sections in your quiz: Say you have 200 questions. Say student will answer 8 questions. Say sections: 4. Then: 200/4=50, so student will answer 2 questions of [1,50], 2 of [51,100], 2 of [101,150], 2 of [151,200] '></help>
 			<tr><td>$i18n_how_much_time_long: <td><input type=text name=timeout size=1 value='$timeout' required>
 			<tr><td>$i18n_grades_thresholds:<br>
+			
 			<input style='margin-top: 4px' type=text name=grades_thresholds value='$grades_thresholds' size=45 required><td>
 			<tr><td><div id='choose_owners_button' class='blink'>$i18n_share_quiz</div><br>$current_owners
 			</table>
@@ -410,6 +413,8 @@ function htmlspecialchars_minus_img_src($item) {/*{{{*/
 }
 /*}}}*/
 function quiz_update() {/*{{{*/
+	# psql karramba -c "select * from quizes"
+	# psql karramba -c "alter table quizes add column sections int"
 	extract($_SESSION);
 	$_SESSION['krr']->process_grades_thresholds($_POST['grades_thresholds']);
 	$textarea=$_SESSION['textarea_save']=rtrim($_POST['questions_textarea']);
@@ -433,7 +438,7 @@ function quiz_update() {/*{{{*/
 			array_unshift($v, $_GET['quiz_configure']);
 			$krr->query("INSERT INTO questions(quiz_id , question , answer0 , answer1 , answer2 , correct_vector) VALUES($1, $2, $3, $4, $5, $6)", $v, 1);
 		}
-		$krr->query("UPDATE quizes SET how_many=$1, timeout=$2, grades_thresholds=$3 WHERE id=$4", array($_POST['how_many'], $_POST['timeout'], $_POST['grades_thresholds'], $_GET['quiz_configure']));
+		$krr->query("UPDATE quizes SET how_many=$1, timeout=$2, grades_thresholds=$3, sections=$4 WHERE id=$5", array($_POST['how_many'], $_POST['timeout'], $_POST['grades_thresholds'], $_POST['sections'], $_GET['quiz_configure']));
 		unset($_SESSION['textarea_save']);
 	}
 	validate_quiz_configuration();

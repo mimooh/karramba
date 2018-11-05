@@ -111,6 +111,7 @@ CREATE TABLE quizes (
     quiz_name text,
 	timeout integer,
     how_many integer,
+    sections integer,
 	grades_thresholds text
 );
 
