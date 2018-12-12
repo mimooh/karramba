@@ -736,7 +736,7 @@ function main() {/*{{{*/
 	if(isset($_SESSION['teacher_in'])) {
 		menu();
 		echo "<teacher_body>";
-		if(isset($_GET['debug_student_quiz'])) { $_SESSION['krr']->db_serve_interrupted_quiz($_GET['debug_student_quiz'], 1); }
+		if(isset($_GET['debug_student_quiz'])) { $_SESSION['krr']->db_serve_interrupted_quiz($_GET['debug_student_quiz'], 1, 1); }
 		if(isset($_POST['do_modify_owners']))  { do_modify_owners(); }
 		if(isset($_POST['quiz_add']))          { quiz_add(); }
 		if(isset($_POST['quiz_remove']))       { quiz_remove(); }

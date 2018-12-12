@@ -163,13 +163,19 @@ class karramba {/*{{{*/
 		return array($student_answers, $total_points, "<table style='width:340px'>$details</table>");
 	}
 /*}}}*/
-	public function db_serve_interrupted_quiz($interrupted_randomized_id, $present_answers=0) {/*{{{*/
+	public function db_serve_interrupted_quiz($interrupted_randomized_id, $present_answers=0, $show_deleted=0) {/*{{{*/
 		extract($_SESSION);
 		$r=$krr->query("SELECT * FROM r WHERE randomized_id=$1", array($interrupted_randomized_id))[0];
 
 		$set=[];
 		foreach(explode(",", $r['questions_vector']) as $q_id) {
-			$set[]=$krr->query("SELECT * FROM questions WHERE id=$1 and deleted = FALSE", array($q_id))[0];
+			if($show_deleted==1) { 
+				# TODO: I've lost track what's the reason for 'and deleted = FALSE' :)
+				# At least when teachers browse the results history we should be able to see the deleted tests also
+				$set[]=$krr->query("SELECT * FROM questions WHERE id=$1", array($q_id))[0];
+			} else {
+				$set[]=$krr->query("SELECT * FROM questions WHERE id=$1 and deleted = FALSE", array($q_id))[0];
+			}
 		}
 		$student_answers=explode(",", $r['student_answers_vector']);
 		$correct_answers=explode(",", $r['correct_answers_vector']);
