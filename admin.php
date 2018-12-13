@@ -54,9 +54,10 @@ function do_logout(){/*{{{*/
 	header("Location: $url");
 }/*}}}*/
 function quizes_configure(){/*{{{*/
+	# psql karramba -c "select * from questions limit 100"
 	extract($_SESSION);
 	echo "<table> <thead><th>$i18n_quiz<th>$i18n_all_questions<th>$i18n_how_many_questions_short<th>$i18n_how_much_time_short<th>$i18n_delete";
-	$r=$krr->query("SELECT l.quiz_name, l.how_many, l.timeout, l.id, count(q.*) FROM quizes l LEFT JOIN questions q on (l.id=q.quiz_id) WHERE l.id in (SELECT quiz_id FROM quizes_owners WHERE teacher_id=$1) OR quiz_name='ExampleQuiz' GROUP BY l.id ORDER BY 1" , array($_SESSION['teacher_id']));
+	$r=$krr->query("SELECT l.quiz_name, l.how_many, l.timeout, l.id, count(q.*) FROM quizes l LEFT JOIN questions q on (l.id=q.quiz_id) WHERE q.deleted=FALSE AND l.id in (SELECT quiz_id FROM quizes_owners WHERE teacher_id=$1) OR quiz_name='ExampleQuiz' GROUP BY l.id ORDER BY 1" , array($_SESSION['teacher_id']));
 	if(!empty($r)) { 
 		foreach($r as $q){
 			extract($q);
