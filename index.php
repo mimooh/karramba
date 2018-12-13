@@ -186,7 +186,9 @@ function make_randomized_quiz(){/*{{{*/
 	//						array('x=2'             , 'x=3'             , 'x=0')                ,
 	//					);
 /*}}}*/
-	extract ($_SESSION);
+	# psql karramba -c "SELECT id FROM questions WHERE id IN (930,931,932) ORDER BY RANDOM()"
+
+	$krr=$_SESSION['krr'];
 	$qv=[];
 	$cv=[];
 	$ov=[];
@@ -194,8 +196,8 @@ function make_randomized_quiz(){/*{{{*/
 	if($_GET['quiz_instance_id']==1) {
 		$r=$krr->query("SELECT * FROM questions WHERE quiz_id=1 AND deleted = FALSE ORDER BY id");
 	} else {
-		$how_many=$krr->query("SELECT quizes.id, quizes.how_many FROM quizes, quizes_instances WHERE quizes.id=quizes_instances.quiz_id AND quizes_instances.id=$1", array($_GET['quiz_instance_id']))[0]['how_many'];
-		$r=$krr->query("SELECT * FROM questions WHERE quiz_id IN (SELECT quiz_id FROM quizes_instances WHERE id=$1) AND deleted = FALSE ORDER BY RANDOM() LIMIT $2", array($_GET['quiz_instance_id'], $how_many));
+		$questions_ids_in_sections=make_randomized_quiz_sections();
+		$r=$krr->query("SELECT * FROM questions WHERE id IN ($questions_ids_in_sections) ORDER BY RANDOM()");
 	}
 	foreach($r as $q){
 		$qv[]=$q['id']; 
@@ -218,6 +220,34 @@ function make_randomized_quiz(){/*{{{*/
 	return db_insert_randomized_quiz($questions,$answers,$cv,$ov,$qv);
 
 } /*}}}*/
+function make_randomized_quiz_sections() {/*{{{*/
+	// This is where we draw the questions and we take sections under account. 
+	// We handle the potential problems here:
+	// * empty $sections > $sections=1
+	// * total number of questions / sections is not an integer
+	// * how many / sections is not an integer
+
+	$krr=$_SESSION['krr'];
+	$rr=$krr->query("SELECT quiz_id FROM quizes_instances WHERE id=$1", array($_GET['quiz_instance_id']));
+	$qid=$rr[0]['quiz_id'];
+	$rr=$krr->query("SELECT quizes.id as qid, quizes.sections, quizes.how_many, questions.id as question_id FROM questions LEFT JOIN quizes on questions.quiz_id=quizes.id WHERE questions.deleted=FALSE AND quizes.id=$1 ORDER BY questions.id", array($qid));
+	$sections=$rr[0]['sections'];
+	$how_many=$rr[0]['how_many'];
+	if(empty($sections)) { $sections=1; }
+	$q_total=count($rr);
+	$q_per_section=round($how_many/$sections);
+	$chunked=array_chunk($rr, round($q_total/$sections));
+	unset($chunked[$sections]);
+	$collect=[];
+	foreach($chunked as $k=>$v) { 
+		$random_keys=array_rand($v,$q_per_section);
+		foreach($random_keys as $rn) { 
+			$collect[]=$v[$rn]['question_id'];
+		}
+	}
+	return implode(",", $collect);
+}
+/*}}}*/
 function db_insert_randomized_quiz($questions,$answers,$cv,$ov,$qv) { /*{{{*/
 	$timeout=$_SESSION['krr']->query("SELECT q.timeout FROM quizes q, quizes_instances i WHERE q.id=i.quiz_id AND i.id=$1", array($_GET['quiz_instance_id']))[0]['timeout'];
 	$deadline=date("Y-m-d H:i:s", strtotime("+ $timeout minutes"));

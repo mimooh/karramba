@@ -307,9 +307,10 @@ function display_configured_quiz($textarea) { /*{{{*/
 	$current_owners=list_owners();
 	manage_owners();
 	upload_images_form(); 
-	$r=$krr->query("SELECT quiz_name, how_many, timeout, grades_thresholds FROM quizes WHERE id=$1" , array($_GET['quiz_configure']))[0];
+	$r=$krr->query("SELECT quiz_name, how_many, timeout, grades_thresholds, sections FROM quizes WHERE id=$1" , array($_GET['quiz_configure']))[0];
 	if(empty($r['how_many'])) { $how_many=1; } else { $how_many=$r['how_many']; }
 	if(empty($r['timeout']))  { $timeout=1; } else { $timeout=$r['timeout']; }
+	if(empty($r['sections']))  { $sections=1; } else { $sections=$r['sections']; }
 	if(empty($r['grades_thresholds'])) { $grades_thresholds='40%:3.0; 50%:3.5; 65%:4.0; 75%:4.5; 85%:5.0'; } else { $grades_thresholds=$r['grades_thresholds']; }
 	if($_GET['quiz_configure']==1) {
 		$display="<textarea id=q_textarea name=questions_textarea readonly cols=60 rows=30>$textarea</textarea>";
@@ -321,9 +322,9 @@ function display_configured_quiz($textarea) { /*{{{*/
 			<textarea id=q_textarea name=questions_textarea cols=60 rows=20>$textarea</textarea><br>
 			<center>
 			<table style='background-color: #044;'>
-			<tr><td>$i18n_how_many_questions_long: <td><input type=text name=how_many size=1 value='$how_many' required> 
-			<td> sections: <input type=text size=1 name=sections><help title='Virtual sections in your quiz: Say you have 200 questions. Say student will answer 8 questions. Say sections: 4. Then: 200/4=50, so student will answer 2 questions of [1,50], 2 of [51,100], 2 of [101,150], 2 of [151,200] '></help>
-			<tr><td>$i18n_how_much_time_long: <td><input type=text name=timeout size=1 value='$timeout' required>
+			<tr><td>$i18n_how_many_questions_long: <td><input type=text name=how_many size=1 value='$how_many' required pattern='\d*'> 
+			<td> sections: <input type=text required pattern='\d*' size=1 name=sections value=$sections><help title='Virtual sections in your quiz: Say you have 200 questions. Say student will answer 8 questions. Say sections: 4. Then: 200/4=50, so student will answer 2 questions of [1,50], 2 of [51,100], 2 of [101,150], 2 of [151,200] '></help>
+			<tr><td>$i18n_how_much_time_long: <td><input type=text pattern='\d*' name=timeout size=1 value='$timeout' required>
 			<tr><td>$i18n_grades_thresholds:<br>
 			
 			<input style='margin-top: 4px' type=text name=grades_thresholds value='$grades_thresholds' size=45 required><td>
@@ -736,7 +737,7 @@ function main() {/*{{{*/
 	if(isset($_SESSION['teacher_in'])) {
 		menu();
 		echo "<teacher_body>";
-		if(isset($_GET['debug_student_quiz'])) { $_SESSION['krr']->db_serve_interrupted_quiz($_GET['debug_student_quiz'], 1, 1); }
+		if(isset($_GET['debug_student_quiz'])) { $_SESSION['krr']->db_serve_interrupted_quiz($_GET['debug_student_quiz'], 1); }
 		if(isset($_POST['do_modify_owners']))  { do_modify_owners(); }
 		if(isset($_POST['quiz_add']))          { quiz_add(); }
 		if(isset($_POST['quiz_remove']))       { quiz_remove(); }
