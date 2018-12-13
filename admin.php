@@ -313,30 +313,34 @@ function display_configured_quiz($textarea) { /*{{{*/
 	if(empty($r['timeout']))  { $timeout=1; } else { $timeout=$r['timeout']; }
 	if(empty($r['sections']))  { $sections=1; } else { $sections=$r['sections']; }
 	if(empty($r['grades_thresholds'])) { $grades_thresholds='40%:3.0; 50%:3.5; 65%:4.0; 75%:4.5; 85%:5.0'; } else { $grades_thresholds=$r['grades_thresholds']; }
+	$display="<table>";
 	if($_GET['quiz_configure']==1) {
-		$display="<textarea id=q_textarea name=questions_textarea readonly cols=60 rows=30>$textarea</textarea>";
+
+		$display.="<textarea id=q_textarea name=questions_textarea readonly cols=60 rows=20>$textarea</textarea>";
 	} else {
-		$display="
+		$display.="
 			<FORM METHOD=POST>
+			<tr><td colspan=2 style='text-align: center'>
 			<input type=submit name=quiz_update value='$i18n_update'>
 			<div class=blink id=q_instructions>$i18n_instructions</div>
-			<textarea id=q_textarea name=questions_textarea cols=60 rows=20>$textarea</textarea><br>
-			<center>
-			<table style='background-color: #044;'>
-			<tr><td>$i18n_how_many_questions_long: <td><input type=text name=how_many size=1 value='$how_many' required pattern='\d*'> 
-			<td> sections: <input type=text required pattern='\d*' size=1 name=sections value=$sections><help title='Virtual sections in your quiz: Say you have 200 questions. Say student will answer 8 questions. Say sections: 4. Then: 200/4=50, so student will answer 2 questions of [1,50], 2 of [51,100], 2 of [101,150], 2 of [151,200] '></help>
-			<tr><td>$i18n_how_much_time_long: <td><input type=text pattern='\d*' name=timeout size=1 value='$timeout' required>
-			<tr><td>$i18n_grades_thresholds:<br>
-			
-			<input style='margin-top: 4px' type=text name=grades_thresholds value='$grades_thresholds' size=45 required><td>
-			<tr><td><div id='choose_owners_button' class='blink'>$i18n_share_quiz</div><br>$current_owners
-			</table>
-			</center>
+			<tr><td>
+
+			<textarea id=q_textarea name=questions_textarea cols=60 rows=18>$textarea</textarea><br>
+			<td>
+				<table style='background-color: #044;'>
+				<tr><td>$i18n_how_many_questions_long <td><input type=text name=how_many size=1 value='$how_many' required pattern='\d*'> 
+				<tr><td>$i18n_how_many_sections <help title='$i18n_how_many_sections_howto'></help><td><input type=text required pattern='[1-9]' size=1 name=sections value=$sections>
+				<tr><td>$i18n_how_much_time_long <td><input type=text pattern='\d*' name=timeout size=1 value='$timeout' required>
+				<tr><td>$i18n_grades_thresholds<br>
+				
+				<input style='margin-top: 4px' type=text name=grades_thresholds value='$grades_thresholds' size=45 required><td>
+				<tr><td><div id='choose_owners_button' class='blink'>$i18n_share_quiz</div><br>$current_owners
+				</table>
 			</FORM><br>
 			<q_howto class=invisible>$i18n_howto_first_time<br><br><br>$i18n_howto_modify_questions</q_howto>
 		";
 	}
-	echo "<questions_form> $display </questions_form>";
+	echo "$display";
 
 }/*}}}*/
 function display_configured_quiz_preview($preview) { /*{{{*/
@@ -346,16 +350,16 @@ function display_configured_quiz_preview($preview) { /*{{{*/
 	$quiz_name=$r['quiz_name'];
 	$number_of_questions=$krr->query("SELECT count(*) FROM questions WHERE quiz_id=$1 AND deleted = FALSE" , array($_GET['quiz_configure']))[0]['count'];
 	echo "
-	<questions_preview>
+	<tr><td>
 		<table>
 		<tr><th>$i18n_quiz<td> $quiz_name
 		<tr><th>$i18n_number_of_questions<td> $number_of_questions
 		</table>
 		<br>
-		<center>$i18n_preview</center><br>
+		<h1>$i18n_preview</h1>
 		<table style='width:330px'>$preview</table>
 	$l_images
-	</questions_preview>
+	</table>
 	";
 
 }/*}}}*/

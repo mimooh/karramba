@@ -1,3 +1,5 @@
+i18n_how_many_sections				; Ile sekcji zawiera test?
+i18n_how_many_sections_howto		; Wirtualne sekcje w teście: Przyjmijmy, że mamy 200 pytań. Przyjmijmy, że student odpowiada na 8 pytań. Przyjmijmy, że mamy 4 sekcje. Wówczas: 200/4=50, więc student odpowie na 2 pytania z [1,50], 2 z [51,100], 2 z [101,150], 2 z [151,200]
 i18n_owners_hanging					; Nie mogę usunać testu, ponieważ jest on współdzielony z innymi wykładowcami. Zobacz konfigurację testu.
 i18n_activate_quiz                  ; Aktywuj
 i18n_you_must_belong_to_group		; Musisz być zalogowany do właściwej grupy

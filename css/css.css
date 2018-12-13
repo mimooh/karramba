@@ -259,6 +259,7 @@ teacher_body {
 }
 
 teacher_menu {
+	z-index: 100;
 	background: #800;
 	padding: 4px;
 	position:fixed;
@@ -273,22 +274,6 @@ teacher_menu a {
 	display: inline-block;
 	text-decoration: none;
 	color: #fff;
-}
-
-questions_form {
-	position:fixed;
-	left:0px;
-	top:50px;
-	display:block;
-	width:600px;
-	padding:5px 5px 100px 5px;
-	text-align: center;
-}
-
-questions_preview {
-	display: block;
-	margin-left:600px;
-	width: 330px;
 }
 
 #q_textarea {

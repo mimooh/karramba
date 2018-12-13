@@ -1,3 +1,5 @@
+i18n_how_many_sections				; How many sections are there in the quiz? 
+i18n_how_many_sections_howto		; Virtual sections in your quiz: Say you have 200 questions. Say student will answer 8 questions. Say there are 4 sections. Then: 200/4=50, so student will answer 2 questions of [1,50], 2 of [51,100], 2 of [101,150], 2 of [151,200]
 i18n_owners_hanging					; Cannot remove: this quiz is shared with other teachers. See the configuration of this quiz.
 i18n_activate_quiz                  ; Activate
 i18n_you_must_belong_to_group		; You must be logged to the proper group
