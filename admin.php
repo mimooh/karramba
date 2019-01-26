@@ -1,6 +1,7 @@
 <?PHP
 session_name(getenv("KARRAMBA_ADM_SESSION_NAME"));
 require_once("libKarramba.php");
+require_once("manage_students.php");
 function teacher_login_form(){/*{{{*/
 	extract($_SESSION);
 	$_SESSION['home_url']=$_SERVER['SCRIPT_NAME'];
@@ -618,6 +619,7 @@ function quiz_results() {/*{{{*/
 /*}}}*/
 function format_group($id, $link=1) {/*{{{*/
 	$r=$_SESSION['krr']->query("SELECT group_name FROM groups WHERE id=$1", array($id));
+	if(empty($r[0])) { return; } 
 	if($link==1) { 
 		return "<div class=blink><a href=?group_info=$id>".$r[0]['group_name']."</a></div>"; 
 	} else {
@@ -643,29 +645,6 @@ function group_info() {/*{{{*/
 		echo join($view);
 		echo "</table>";
 	}
-}
-/*}}}*/
-function students_list() {/*{{{*/
-	// KARRAMBA_NEW_STUDENT_SECRET is a token which students need to create a new account
-	// You most likely don't need it.
-	
-	extract($_SESSION);
-	$r=$krr->query("SELECT g.group_name, s.last_name, s.first_name, s.password FROM students s, groups g WHERE g.id=s.group_id ORDER BY g.group_name, s.last_name");
-
-	$view='';
-	$last_group='';
-	foreach($r as $k=>$v) {
-		if($last_group != $v['group_name']) { 
-			$view.="<tr><td><green>".$v['group_name']."</green><td><green>Password</green>";
-			$last_group=$v['group_name'];
-		}
-		$view.="<tr><td>".$v['last_name']." ".$v['first_name']."<td>".$v['password'];
-	}
-
-	if(!empty(getenv("KARRAMBA_NEW_STUDENT_SECRET"))) { 
-		echo "<table><tr><td>$i18n_secret:<td><h1><help title='$i18n_help_what_is_secret'>".getenv("KARRAMBA_NEW_STUDENT_SECRET")."</help></h1></table>";
-	}
-	echo "<table>$view</table>";
 }
 /*}}}*/
 function do_modify_owners(){/*{{{*/
@@ -743,6 +722,8 @@ function main() {/*{{{*/
 		menu();
 		echo "<teacher_body>";
 		if(isset($_GET['debug_student_quiz'])) { $_SESSION['krr']->db_serve_interrupted_quiz($_GET['debug_student_quiz'], 1); }
+		if(isset($_POST['manage_students']))   { manage_students(); }
+		if(isset($_POST['update_student']))    { update_student(); }
 		if(isset($_POST['do_modify_owners']))  { do_modify_owners(); }
 		if(isset($_POST['quiz_add']))          { quiz_add(); }
 		if(isset($_POST['quiz_remove']))       { quiz_remove(); }
@@ -754,8 +735,8 @@ function main() {/*{{{*/
 		if(isset($_GET['run_quizes']))         { run_quizes(); monitor_logins(); }
 		if(isset($_GET['quiz_results']))       { quiz_results(); }
 		if(isset($_GET['quizes_results']))     { quizes_summary(); quizes_results(); }
-		if(isset($_GET['quiz_summary']))	   { quiz_summary(); }
-		if(isset($_GET['max']))				   { quiz_summary_max(); }
+		if(isset($_GET['quiz_summary']))       { quiz_summary(); }
+		if(isset($_GET['max']))                { quiz_summary_max(); }
 		if(isset($_GET['quizes_configure']))   { quizes_configure(); }
 		if(isset($_GET['students_list']))      { students_list(); }
 
