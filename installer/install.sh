@@ -60,23 +60,11 @@ echo "export KARRAMBA_STUDENT_INT_PASS='$KARRAMBA_STUDENT_INT_PASS'" >> $temp
 sudo cp $temp /etc/apache2/envvars
 rm $temp
 
-[ "X$1" == "Xclear" ] && { 
-	echo "sudo -u postgres psql -c \"DROP DATABASE karramba\"";
-	echo "sudo -u postgres psql -c \"DROP USER $KARRAMBA_DB_USER\"";
-	echo "enter or ctrl+c";
-	read;
-	sudo -u postgres psql -c "DROP DATABASE karramba";
-	sudo -u postgres psql -c "DROP USER $KARRAMBA_DB_USER";
-}
-
 sudo -u postgres psql -lqt | cut -d \| -f 1 | grep -qw 'karramba' && { 
-	echo ""
+	echo 
 	echo "karramba already exists in psql. You may wish to call";
-	echo "DROP DATABASE karramba; DROP USER $KARRAMBA_DB_USER" 
-	echo "by running:"
-	echo ""
-	echo "	bash install.sh clear";
-	echo ""
+	echo
+	echo 'sudo -u postgres psql -c "DROP DATABASE karramba"; sudo -u postgres psql -c "DROP USER karramba"' 
 	exit
 }
 
