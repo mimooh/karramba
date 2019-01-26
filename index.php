@@ -34,10 +34,10 @@ function login_form(){/*{{{*/
 }/*}}}*/
 function do_login(){/*{{{*/
 	extract($_SESSION);
-	if(empty($_POST['studentIdFromLogin'])) {  
-		$krr->msg($i18n_bad_login);
-		return;
-	}
+
+	if(empty($_POST['studentIdFromLogin'])) { $krr->msg($i18n_bad_login); return; }
+	if(empty($_POST['password']))           { $krr->msg($i18n_bad_login); return; }
+
 	$row=$krr->query("SELECT id as student_id, group_id, last_name, first_name, password FROM students WHERE id=$1", array($_POST['studentIdFromLogin']));
 
 	if(isset($row) && $row[0]['password']==$_POST['password']) {
