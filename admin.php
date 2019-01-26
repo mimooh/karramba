@@ -511,10 +511,10 @@ function quiz_summary_max() {/*{{{*/
 	// All results for a single quiz, i.e. all groups' results in the quiz "Linear Algebra". 
 	// We should filter out the results older than 12 months or so.
 	extract($_SESSION);
-	$query="SELECT s.last_name, s.first_name, g.group_name, max(r.points) as points ,s.index
+	$query="SELECT s.last_name, s.first_name, g.group_name, max(r.points) as points 
 	FROM randomized_quizes r, students s, groups g
 	WHERE quiz_id=$1 AND g.id=s.group_id AND r.student_id=s.id  
-	group by s.last_name, s.first_name, g.group_name, s.index
+	group by s.last_name, s.first_name, g.group_name
 	ORDER BY g.group_name desc , s.last_name ASC";
 		
 	$r=$krr->query($query, array($_GET['max'])); 
@@ -525,8 +525,8 @@ function quiz_summary_max() {/*{{{*/
 	$i=1;
 	foreach($r as $row) {
 		extract($row);
-			$collect.="<tr><td>$i<td>$last_name $first_name<td>$group_name<td>$points</a>";
-		$csv[]="$group_name;$last_name $first_name;$index;$points";
+		$collect.="<tr><td>$i<td>$last_name $first_name<td>$group_name<td>$points</a>";
+		$csv[]="$group_name;$last_name $first_name;$points";
 		$i++;
 	}
 	if(!empty($collect)) { 
@@ -650,7 +650,7 @@ function students_list() {/*{{{*/
 	// You most likely don't need it.
 	
 	extract($_SESSION);
-	$r=$krr->query("SELECT g.group_name, s.last_name, s.first_name, s.index  FROM students s, groups g WHERE g.id=s.group_id ORDER BY g.group_name, s.last_name");
+	$r=$krr->query("SELECT g.group_name, s.last_name, s.first_name, s.password FROM students s, groups g WHERE g.id=s.group_id ORDER BY g.group_name, s.last_name");
 
 	$view='';
 	$last_group='';
@@ -659,7 +659,7 @@ function students_list() {/*{{{*/
 			$view.="<tr><td><green>".$v['group_name']."</green><td><green>Password</green>";
 			$last_group=$v['group_name'];
 		}
-		$view.="<tr><td>".$v['last_name']." ".$v['first_name']."<td>".$v['index'];
+		$view.="<tr><td>".$v['last_name']." ".$v['first_name']."<td>".$v['password'];
 	}
 
 	if(!empty(getenv("KARRAMBA_NEW_STUDENT_SECRET"))) { 
