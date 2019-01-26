@@ -4,6 +4,7 @@
 # If you are on a hosting server with users that cannot be trust and/or if you cannot write to /etc/apache2/envvars
 # then you need to find your way to propagate these variables for www-data user. Or just make them constants in
 # karramba code.
+basename `pwd` | grep -q installer || { echo "This script must be run from within karramba/installer/ directory"; exit; }
 
 KARRAMBA_DB_USER='karramba'  
 KARRAMBA_DB_PASS='secret'  
@@ -275,8 +276,11 @@ composer require phpoffice/phpspreadsheet
 
 echo "Restarting apache..."
 sudo service apache2 restart
-sudo chown -R www-data ../img/
+
+sudo chgrp -R www-data ../img/
+sudo chmod -R g+s ../img/
 sudo chmod -R 775 ../img/
+
 echo "Default student: Snow Jon, password: 1"
 echo "Default teacher: a@com, password: 1"
 #}}}
