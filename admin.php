@@ -329,7 +329,7 @@ function display_configured_quiz($textarea) { /*{{{*/
 			<td>
 				<table style='background-color: #044;'>
 				<tr><td>$i18n_how_many_questions_long <td><input type=text name=how_many size=1 value='$how_many' required pattern='\d*'> 
-				<tr><td>$i18n_how_many_sections <help title='$i18n_how_many_sections_howto'></help><td><input type=text required pattern='[1-9]' size=1 name=sections value=$sections>
+				<tr><td>$i18n_how_many_sections <help title='$i18n_how_many_sections_howto'> </help><td><input type=text required pattern='[1-9]' size=1 name=sections value=$sections>
 				<tr><td>$i18n_how_much_time_long <td><input type=text pattern='\d*' name=timeout size=1 value='$timeout' required>
 				<tr><td>$i18n_grades_thresholds<br>
 				
