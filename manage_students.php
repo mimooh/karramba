@@ -41,6 +41,7 @@ function manage_students() {/*{{{*/
 		$i++;
 	}
 	echo "</table>";
+	exit();
 }
 /*}}}*/
 function update_student() {/*{{{*/
@@ -51,6 +52,7 @@ function update_student() {/*{{{*/
 }
 /*}}}*/
 function students_list() {/*{{{*/
+	# psql karramba -c "select * from students";
 	// KARRAMBA_NEW_STUDENT_SECRET is a token which students need to create a new account
 	// You most likely don't need it.
 
@@ -60,9 +62,12 @@ function students_list() {/*{{{*/
 	}
 
 	$r=$_SESSION['krr']->query("SELECT * FROM groups ORDER BY group_name");
+	echo "<table><tr><th>group<th>students";
 	foreach($r as $k=>$v) { 
-		echo "<form style='display:inline' method=post><input type=hidden name=manage_students[group_id] value=$v[id]><input type=submit name=manage_students[group_name] value=$v[group_name]></form>";
+		$s=$_SESSION['krr']->query("SELECT count(*) FROM students WHERE group_id=$1", array($v['id']));
+		echo "<tr><td><form style='display:inline' method=post><input type=hidden name=manage_students[group_id] value=$v[id]><input type=submit name=manage_students[group_name] value=$v[group_name]></form><td>".$s[0]['count'];
 	}
+	echo "</table>";
 }
 /*}}}*/
 

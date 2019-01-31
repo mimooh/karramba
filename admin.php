@@ -2,6 +2,7 @@
 session_name(getenv("KARRAMBA_ADM_SESSION_NAME"));
 require_once("libKarramba.php");
 require_once("manage_students.php");
+
 function teacher_login_form(){/*{{{*/
 	extract($_SESSION);
 	$_SESSION['home_url']=$_SERVER['SCRIPT_NAME'];
@@ -56,9 +57,13 @@ function do_logout(){/*{{{*/
 }/*}}}*/
 function quizes_configure(){/*{{{*/
 	# psql karramba -c "select * from questions limit 100"
+	# psql karramba -c "select * from quizes_owners"
 	extract($_SESSION);
 	echo "<table> <thead><th>$i18n_quiz<th>$i18n_all_questions<th>$i18n_how_many_questions_short<th>$i18n_how_much_time_short<th>$i18n_delete";
-	$r=$krr->query("SELECT l.quiz_name, l.how_many, l.timeout, l.id, count(q.*) FROM quizes l LEFT JOIN questions q on (l.id=q.quiz_id) WHERE q.deleted=FALSE AND l.id in (SELECT quiz_id FROM quizes_owners WHERE teacher_id=$1) OR quiz_name='ExampleQuiz' GROUP BY l.id ORDER BY 1" , array($_SESSION['teacher_id']));
+	#$r=$krr->query("SELECT quiz_id FROM quizes_owners WHERE teacher_id=$1" , array($_SESSION['teacher_id']));
+	#$r=$krr->query("SELECT l.quiz_name, l.how_many, l.timeout, l.id, count(q.*) FROM quizes l LEFT JOIN questions q on (l.id=q.quiz_id) WHERE q.deleted=FALSE AND l.id in (SELECT quiz_id FROM quizes_owners WHERE teacher_id=$1) OR quiz_name='ExampleQuiz' GROUP BY l.id ORDER BY 1" , array($_SESSION['teacher_id']));
+	# TODO: fix the concept of deleted quizes, see todo.txt
+	$r=$krr->query("SELECT l.quiz_name, l.how_many, l.timeout, l.id, count(q.*) FROM quizes l LEFT JOIN questions q on (l.id=q.quiz_id) WHERE l.id in (SELECT quiz_id FROM quizes_owners WHERE teacher_id=$1) OR quiz_name='ExampleQuiz' GROUP BY l.id ORDER BY 1" , array($_SESSION['teacher_id']));
 	if(!empty($r)) { 
 		foreach($r as $q){
 			extract($q);
@@ -453,6 +458,8 @@ function quiz_update() {/*{{{*/
 
 /*}}}*/
 function quiz_add(){/*{{{*/
+	# psql karramba -c "select * from quizes"
+	# psql karramba -c "select * from quizes_owners order by quiz_id"
 	extract($_SESSION);
 	$id=$krr->query("INSERT INTO quizes (quiz_name) VALUES ($1) RETURNING id" , array($_POST['quiz_name_add']))[0]['id'];
 	$krr->query("INSERT INTO quizes_owners (quiz_id, teacher_id) VALUES ($1,$2)" , array($id,$_SESSION['teacher_id']), 1);
@@ -620,30 +627,11 @@ function quiz_results() {/*{{{*/
 function format_group($id, $link=1) {/*{{{*/
 	$r=$_SESSION['krr']->query("SELECT group_name FROM groups WHERE id=$1", array($id));
 	if(empty($r[0])) { return; } 
+	$gname=$r[0]['group_name'];
 	if($link==1) { 
-		return "<div class=blink><a href=?group_info=$id>".$r[0]['group_name']."</a></div>"; 
+		return "<form style='display:inline' action=admin.php method=post><input type=hidden name=manage_students[group_id] value='$id'><input type=submit name=manage_students[group_name] value='$gname'></form>";
 	} else {
-		return "<green>".$r[0]['group_name']."</green>"; 
-	}
-}
-/*}}}*/
-function group_info() {/*{{{*/
-	$r=$_SESSION['krr']->query("SELECT g.group_name, s.last_name, s.first_name, s.password FROM students s, groups g WHERE g.id=s.group_id AND g.id=$1 ORDER BY g.group_name, s.last_name", array($_GET['group_info']));
-	if(empty($r)) { 
-		echo $_SESSION['i18n_empty_results'];
-	} else {
-		$view=[];
-		$i=0;
-		foreach($r as $k=>$v) {
-			extract($v);
-			$i++;
-			$view[]="<tr><td>$last_name $first_name<td>$password";
-		}
-		echo "<green>$group_name</green>  <green>students: $i</green><br><br>";
-		echo "<table>";
-		echo "<tr><th>student<th>password";
-		echo join($view);
-		echo "</table>";
+		return "<green>$gname</green>"; 
 	}
 }
 /*}}}*/
@@ -729,7 +717,6 @@ function main() {/*{{{*/
 		if(isset($_POST['quiz_remove']))       { quiz_remove(); }
 		if(isset($_POST['quiz_update']))       { quiz_update(); }
 		if(isset($_GET['quiz_configure']))     { quiz_configure(); }
-		if(isset($_GET['group_info']))         { group_info(); }
 		if(isset($_POST['run_quiz']))          { run_quiz(); }
 		if(isset($_POST['stop_quiz']))         { stop_quiz(); }
 		if(isset($_GET['run_quizes']))         { run_quizes(); monitor_logins(); }
