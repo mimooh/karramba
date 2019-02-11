@@ -256,7 +256,7 @@ done
 echo;
 
 echo "Installing xls producer";
-sudo apt-get install composer php-xml php7.0-gd php7.0-mbstring php-zip
+sudo apt-get install composer php-xml php-gd php-mbstring php-zip
 cd ..
 composer require phpoffice/phpspreadsheet
 
