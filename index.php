@@ -25,11 +25,13 @@ function login_form(){/*{{{*/
 	<input size=40 type=$type name='password' autocomplete='off'> 
 	<input type=hidden id='inputHiddenStudentId' name=studentIdFromLogin> <br><br>
 	<input type=submit name=logMeIn value=$i18n_submit><br><br>
-	<a style='font-size:11px' href=".getenv("KARRAMBA_NEW_STUDENT_FORM_URL").">New student?</a>
 	<br><br>
 	<img src=img/karramba.png><br>
+	</form>
+	<a class=blink style='font-size:11px' href=".getenv("KARRAMBA_NEW_STUDENT_FORM_URL").">New student</a>
+	<a class=rlink style='font-size:11px' href=admin.php>admin</a>
 	</center>
-	</form>"; 
+	"; 
 
 }/*}}}*/
 function do_login(){/*{{{*/

@@ -23,6 +23,16 @@ function dd2($arr) {
 }
 
 /*}}}*/
+function fix_nulls($arr) { /*{{{*/
+	// Prepares data for db insert: trims and s//NULL/
+
+	foreach($arr as $k=>$v) { 
+		$arr[$k]=trim($v);
+		if($v=='') { $arr[$k]=NULL; }
+	}
+	return $arr;
+}
+/*}}}*/
 class karramba {/*{{{*/
 	// On init we load all messages from messages/en.csv. This way we don't have missing texts in case translations are not complete.
 	// Then messages/$language.csv is loaded to replace some/all en strings.
