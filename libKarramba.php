@@ -59,7 +59,12 @@ class karramba {/*{{{*/
 }
 /*}}}*/
 	public function htmlHead() { /*{{{*/
-			
+		// $inline_css may display a distinct background. Useful for distinguishing karramba devel version.
+		$inline_css='';
+		if(is_file(dirname($_SERVER['SCRIPT_FILENAME'])."/css/workinprogress.jpg")) {
+			$inline_css="<style> body { background-image: url(".dirname($_SERVER['SCRIPT_NAME'])."/css/workinprogress.jpg); background-repeat: repeat; background-attachment: fixed; } </style>"; 
+		}
+
 		echo "
 		<!DOCTYPE html>
 		<html> 
@@ -67,6 +72,7 @@ class karramba {/*{{{*/
 			<meta charset='utf-8'>
 			<title>karramba</title>
 			<link rel='stylesheet' href='css/css.css'>
+			$inline_css
 			<link rel='stylesheet' href='js/jquery-ui.min.css'>
 			<meta name='viewport' content='width=device-width, initial-scale=1, minimum-scale=1'>
 			<script src='js/jquery-3.1.1.min.js'></script>
