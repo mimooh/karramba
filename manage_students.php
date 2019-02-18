@@ -1,9 +1,11 @@
 <?PHP
-function group_droplist($group) {/*{{{*/
-	$r=$_SESSION['krr']->query("SELECT * FROM groups order by group_name");
+function group_droplist($group_id) {/*{{{*/
+	$r=$_SESSION['krr']->query("SELECT * FROM groups WHERE id=$1 ORDER BY group_name", array($group_id));
 	$out="<select name='group'>";
-	$out.="<option value=$group[group_id]>$group[group_name]</option>";
+	$out.="<option value=".$r[0]['id'].">".$r[0]['group_name']."</option>";
 	$out.="<option value=-1></option>";
+
+	$r=$_SESSION['krr']->query("SELECT * FROM groups order by group_name");
 	foreach($r as $k=>$v) {
 		$out.="<option value=$v[id]>$v[group_name]</option>";
 	}
@@ -14,18 +16,9 @@ function group_droplist($group) {/*{{{*/
 function manage_students() {/*{{{*/
 	# psql karramba -c "SELECT * FROM students"
 	# psql karramba -c "SELECT * FROM groups"
-	/*
-	psql karramba -c "
-	INSERT INTO students(first_name, last_name,group_id) values('Adam', 'Aowski', 1119);
-	INSERT INTO students(first_name, last_name,group_id) values('Bdam', 'Bowski', 1119);
-	INSERT INTO students(first_name, last_name,group_id) values('Cdam', 'Cowski', 1119);
-	INSERT INTO students(first_name, last_name,group_id) values('Ddam', 'Dowski', 1119);
-	INSERT INTO students(first_name, last_name,group_id) values('Edam', 'Eowski', 1119);
-	"
-	*/
 	extract($_SESSION);
-	$group=group_droplist($_POST['manage_students']);
-	$r=$_SESSION['krr']->query("SELECT * FROM students WHERE group_id=$1 ORDER BY last_name, first_name", array($_POST['manage_students']['group_id']));
+	$group=group_droplist($_GET['manage_students']);
+	$r=$_SESSION['krr']->query("SELECT * FROM students WHERE group_id=$1 ORDER BY last_name, first_name", array($_GET['manage_students']));
 	echo "<table>";
 	echo "<tr><th>lp<th>$i18n_last_name<th>$i18n_first_name<th>index<th>$i18n_password<th>$i18n_group<th>update";
 	$i=1;
@@ -75,7 +68,7 @@ function students_list() {/*{{{*/
 		} else {
 			$count='';
 		}
-		echo "<tr><td><form style='display:inline' method=post><input type=hidden name=manage_students[group_id] value=$v[id]><input type=submit name=manage_students[group_name] value=$v[group_name]></form><td>$count";
+		echo "<tr><td><a class=blink href=?manage_students=$v[id]>$v[group_name]</a><td>$count";
 	}
 	echo "</table>";
 }

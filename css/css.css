@@ -235,7 +235,7 @@ green, black, orange, red, nocolor,  .nocolor {
 black             { background:#000; }
 orange            { background:#a50; }
 red               { background:#600; }
-nocolor, .nocolor { background:none;  border: 1px solid #555; }
+nocolor, .nocolor { background:none;  border: 1px solid #777; }
 
 input[type="submit"]:hover, .blink:hover, .rlink:hover, .nocolor:hover {
 	background: #c60;

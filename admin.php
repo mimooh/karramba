@@ -488,7 +488,7 @@ function quiz_summary() {/*{{{*/
 	FROM randomized_quizes r, students s, groups g
 	WHERE quiz_id=$1 AND g.id=s.group_id AND r.student_id=s.id ORDER BY s.last_name";
 	$r=$krr->query($query, array($_GET['quiz_summary'])); 
-	if(empty($r)) { $krr->msg("$i18n_empty_results"); return; }
+	if(empty($r)) { echo "$i18n_empty_results"; return; }
 		
 	$collect='';
 	$csv=[];
@@ -561,21 +561,35 @@ function quizes_summary() {/*{{{*/
 /*}}}*/
 function quizes_results() {/*{{{*/
 	extract($_SESSION);
-	$r=$krr->query("SELECT i.id, i.quiz_activation, i.group_id, q.quiz_name FROM quizes_instances i, quizes q WHERE 
-	i.teacher_id=$1		AND 
-	i.quiz_id=q.id
-	ORDER BY i.id DESC", array($teacher_id));
-	echo "<table><thead><th>$i18n_time<th>$i18n_group<th>$i18n_quiz<th>$i18n_quizes_results";
+	# psql karramba -c "select * from quizes_instances"
+	# psql karramba -c "select quiz_instance_id,teacher_id  from randomized_quizes group by quiz_instance_id, teacher_id"
+	# psql karramba -c "select * from randomized_quizes order by quiz_instance_id"
+	# psql karramba -c "select * from quizes"
+
+	$r=$krr->query("
+	SELECT rq.quiz_instance_id, count(rq.id) AS count, rq.teacher_id, qi.group_id, to_char(quiz_activation, 'DD-MM (DY) / HH24:MM') as quiz_activation, t.last_name, q.quiz_name FROM randomized_quizes rq 
+	LEFT JOIN quizes_instances qi ON qi.id=rq.quiz_instance_id
+	LEFT JOIN teachers t ON t.id=rq.teacher_id
+	LEFT JOIN quizes q ON rq.quiz_id=q.id 
+	WHERE q.id!=1
+	GROUP BY rq.quiz_instance_id, rq.teacher_id, t.last_name, q.quiz_name, qi.group_id, qi.quiz_activation
+	ORDER BY rq.quiz_instance_id DESC
+	");
+
+	echo "<table><thead><th>No.<th>$i18n_time<th>$i18n_group<th>$i18n_quiz<th>$i18n_teacher<th>$i18n_quizes_results";
+	$i=1;
 	foreach($r as $row) {
 		extract($row);
-		$when=$krr->extractDateAndTime($quiz_activation);
+		$quiz_name=mb_substr($quiz_name,0,18, "utf8");
+		$teacher=mb_substr($last_name,0,10, "utf8");
 		$group=format_group($group_id,0);
-		echo "<tr><td>$when<td>$group<td>$quiz_name <td>
-		<FORM method=POST action=admin.php?quiz_results=$id>
-		<input type=submit value='$i18n_show'>
+		echo "<tr><td>$i<td>$quiz_activation<td>$group<td> <orange>$quiz_name</orange><td>$last_name<td> 
+		<FORM method=POST action=admin.php?quiz_results=$quiz_instance_id>
+		<input type=submit value='($count) $i18n_show'>
 		<input type=hidden name=quiz_activation value=$quiz_activation>
 		</FORM>
 		";
+		$i++;
 	}
 	echo "</table>";
 	
@@ -613,13 +627,13 @@ function quiz_results() {/*{{{*/
 		echo "<table><thead><th>Id<th>Student<th>$i18n_grade<th>$i18n_points<th>Start<th>Comment";
 		echo "$collect";
 		echo '</table><br><br><br>';
+		echo "<br><br><green>CSV for copy paste</green><br><br>";
+		echo "Id;$i18n_last_name;$i18n_first_name;$i18n_grade;$i18n_points<br>";
+		foreach($csv as $v) { 
+			echo "$v<br>";
+		}
 	} else {
 		echo $_SESSION['i18n_empty_results']; 
-	}
-	echo "<br><br><green>CSV for copy paste</green><br><br>";
-	echo "Id;$i18n_last_name;$i18n_first_name;$i18n_grade;$i18n_points<br>";
-	foreach($csv as $v) { 
-		echo "$v<br>";
 	}
 	
 }
@@ -710,8 +724,8 @@ function main() {/*{{{*/
 		menu();
 		echo "<teacher_body>";
 		if(isset($_GET['debug_student_quiz'])) { $_SESSION['krr']->db_serve_interrupted_quiz($_GET['debug_student_quiz'], 1); }
-		if(isset($_POST['manage_students']))   { manage_students(); }
 		if(isset($_POST['update_student']))    { update_student(); }
+		if(isset($_GET['manage_students']))    { manage_students(); }
 		if(isset($_POST['do_modify_owners']))  { do_modify_owners(); }
 		if(isset($_POST['quiz_add']))          { quiz_add(); }
 		if(isset($_POST['quiz_remove']))       { quiz_remove(); }
