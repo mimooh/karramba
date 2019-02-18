@@ -484,11 +484,17 @@ function quiz_summary() {/*{{{*/
 	// All results for a single quiz, i.e. all groups' results in the quiz "Linear Algebra". 
 	// We should filter out the results older than 12 months or so.
 	extract($_SESSION);
-	$query="SELECT s.last_name, s.first_name, g.group_name, r.student_started, r.points, r.grade , r.id AS debug_student_quiz 
-	FROM randomized_quizes r, students s, groups g
-	WHERE quiz_id=$1 AND g.id=s.group_id AND r.student_id=s.id ORDER BY s.last_name";
+
+	quizes_summary();
+	$query="SELECT s.last_name, s.first_name, g.group_name, r.student_started, r.points, r.grade, q.quiz_name, r.id AS debug_student_quiz 
+	FROM randomized_quizes r
+	LEFT JOIN students s ON r.student_id=s.id
+	LEFT JOIN groups g ON s.group_id=g.id
+	LEFT JOIN quizes q ON r.quiz_id=q.id
+	WHERE quiz_id=$1 AND last_name IS NOT NULL ORDER BY s.last_name
+	";
 	$r=$krr->query($query, array($_GET['quiz_summary'])); 
-	if(empty($r)) { echo "$i18n_empty_results"; return; }
+	if(empty($r)) { echo "<orange style='margin-left:20px'>$i18n_empty_results</orange>"; return; }
 		
 	$collect='';
 	$csv=[];
@@ -497,14 +503,18 @@ function quiz_summary() {/*{{{*/
 		extract($row);
 		$started=$krr->extractDate($student_started);
 		if(empty($points)) { 
-			$collect.="<tr><td>$i<td>$last_name $first_name<td>$group_name<td>-<td>-<td>$started<td><black>$i18n_didnt_complete</black>";
+			$collect.="<tr><td>$i<td>$last_name $first_name<td><green>$group_name</green><td>-<td>-<td>$started<td><black>$i18n_didnt_complete</black>";
 		} else {
-			$collect.="<tr><td>$i<td>$last_name $first_name<td>$group_name<td><a href=?debug_student_quiz=$debug_student_quiz class=blink>$grade</a><td>$points<td>$started<td>";
+			$collect.="<tr><td>$i<td>$last_name $first_name<td><green>$group_name</green><td><a href=?debug_student_quiz=$debug_student_quiz class=blink>$grade</a><td>$points<td>$started<td>";
 		}
 		$csv[]="$last_name $first_name;$grade;$points";
 		$i++;
 	}
+
 	if(!empty($collect)) { 
+		$quiz_name=$r[0]['quiz_name'];
+		echo "<orange style='margin-left:20px'>$quiz_name</orange>";
+		echo "<a href=?quiz_summary_max=$_GET[quiz_summary] class=blink>$quiz_name MAX</a> ";
 		echo "<table><thead><th>Id<th>Student<th>Group<th>$i18n_grade<th>$i18n_points<th>Start<th>Comment";
 		echo "$collect";
 		echo '</table><br><br><br>';
@@ -516,16 +526,19 @@ function quiz_summary() {/*{{{*/
 } 
 /*}}}*/
 function quiz_summary_max() {/*{{{*/
-	// All results for a single quiz, i.e. all groups' results in the quiz "Linear Algebra". 
-	// We should filter out the results older than 12 months or so.
 	extract($_SESSION);
-	$query="SELECT s.last_name, s.first_name, g.group_name, max(r.points) as points 
-	FROM randomized_quizes r, students s, groups g
-	WHERE quiz_id=$1 AND g.id=s.group_id AND r.student_id=s.id  
-	group by s.last_name, s.first_name, g.group_name
-	ORDER BY g.group_name desc , s.last_name ASC";
+	quizes_summary();
+
+	$query="SELECT s.last_name, s.first_name, g.group_name, q.quiz_name, max(r.points) as points 
+	FROM randomized_quizes r
+	LEFT JOIN students s ON r.student_id=s.id
+	LEFT JOIN groups g ON g.id=s.group_id
+	LEFT JOIN quizes q ON r.quiz_id=q.id
+	WHERE quiz_id=$1 AND s.last_name IS NOT NULL
+	GROUP BY s.last_name, s.first_name, g.group_name, q.quiz_name
+	ORDER BY g.group_name desc, s.last_name ASC";
 		
-	$r=$krr->query($query, array($_GET['max'])); 
+	$r=$krr->query($query, array($_GET['quiz_summary_max'])); 
 	if(empty($r)) { $krr->msg("$i18n_empty_results"); return; }
 		
 	$collect='';
@@ -533,12 +546,15 @@ function quiz_summary_max() {/*{{{*/
 	$i=1;
 	foreach($r as $row) {
 		extract($row);
-		$collect.="<tr><td>$i<td>$last_name $first_name<td>$group_name<td>$points</a>";
+		$collect.="<tr><td>$i<td>$last_name $first_name<td><green>$group_name</green><td>$points</a>";
 		$csv[]="$group_name;$last_name $first_name;$points";
 		$i++;
 	}
 	if(!empty($collect)) { 
-		echo "<table><thead><th>Id<th>Student<th>Group<th>Points";
+		$quiz_name=$r[0]['quiz_name'];
+		echo "<a style='margin-left:20px' href=?quiz_summary=$_GET[quiz_summary_max] class=blink>$quiz_name</a>";
+		echo "<orange>$quiz_name MAX</orange><br>";
+		echo "<table><thead><th>Id<th>Student<th>Group<th>$i18n_points";
 		echo "$collect";
 		echo '</table><br><br><br>';
 	} 
@@ -552,16 +568,16 @@ function quizes_summary() {/*{{{*/
 	$r=$_SESSION['krr']->query("SELECT quiz_name, id FROM quizes WHERE id in (SELECT quiz_id FROM quizes_owners WHERE teacher_id=$1) ORDER BY 1" , array($_SESSION['teacher_id']));
 	if(!empty($r)) { 
 		foreach($r as $q){
-			extract($q);
-			echo "<a href=?quiz_summary=$id class=blink>$quiz_name</a> ";
-			echo "<a href=?max=$id class=blink>$quiz_name-MAX</a> ";
+			echo "<a href=?quiz_summary=$q[id] class=blink>$q[quiz_name]</a> ";
 		}
 	}
+	echo "<br><br>";
 }
 /*}}}*/
 function quizes_results() {/*{{{*/
 	extract($_SESSION);
-	# psql karramba -c "select * from quizes_instances"
+	# psql karramba -c "select * from quizes_owners"
+	# psql karramba -c "select * from quizes"
 	# psql karramba -c "select quiz_instance_id,teacher_id  from randomized_quizes group by quiz_instance_id, teacher_id"
 	# psql karramba -c "select * from randomized_quizes order by quiz_instance_id"
 	# psql karramba -c "select * from quizes"
@@ -572,11 +588,13 @@ function quizes_results() {/*{{{*/
 	LEFT JOIN teachers t ON t.id=rq.teacher_id
 	LEFT JOIN quizes q ON rq.quiz_id=q.id 
 	WHERE q.id!=1
+	AND
+	rq.quiz_id IN (SELECT quiz_id FROM quizes_owners WHERE teacher_id=$1)
 	GROUP BY rq.quiz_instance_id, rq.teacher_id, t.last_name, q.quiz_name, qi.group_id, qi.quiz_activation
 	ORDER BY rq.quiz_instance_id DESC
-	");
+	", array($_SESSION['teacher_id']));
 
-	echo "<table><thead><th>No.<th>$i18n_time<th>$i18n_group<th>$i18n_quiz<th>$i18n_teacher<th>$i18n_quizes_results";
+	echo "<table><thead><th>Id<th>$i18n_time<th>$i18n_group<th>$i18n_quiz<th>$i18n_teacher<th>$i18n_quizes_results";
 	$i=1;
 	foreach($r as $row) {
 		extract($row);
@@ -598,9 +616,12 @@ function quizes_results() {/*{{{*/
 function quiz_results() {/*{{{*/
 	extract($_SESSION);
 	$r=$krr->query("
-		SELECT r.student_started, r.points, r.grade, r.id AS debug_student_quiz, s.last_name, s.first_name, i.group_id, i.quiz_activation FROM randomized_quizes r, students s, quizes_instances i WHERE 
-		i.id = r.quiz_instance_id	AND
-		r.student_id = s.id			AND
+		SELECT g.group_name, q.quiz_name, r.student_started, r.points, r.grade, r.id AS debug_student_quiz, s.last_name, s.first_name, i.group_id, i.quiz_activation FROM randomized_quizes r
+		LEFT JOIN students s ON s.id=r.student_id
+		LEFT JOIN groups g ON g.id=s.group_id
+		LEFT JOIN quizes_instances i ON i.id=r.quiz_instance_id
+		LEFT JOIN quizes q ON q.id=r.quiz_id
+		WHERE 
 		i.id = $1							
 		ORDER BY s.last_name, s.first_name
 		", 
@@ -617,18 +638,19 @@ function quiz_results() {/*{{{*/
 		} else {
 			$collect.="<tr><td>$i<td>$last_name $first_name<td><a href=?debug_student_quiz=$debug_student_quiz class=blink>$grade</a><td>$points<td>$started<td>";
 		}
-		$csv[]="$i;$last_name;$first_name;$grade;$points";
+		$csv[]="$i;$last_name;$first_name;$grade;$points;$group_name";
 		$i++;
 	}
 	if(!empty($collect)) { 
+		$quiz_name=$r[0]['quiz_name'];
 		$date=$krr->extractDate($student_started);
-		$group=format_group($group_id);
-		echo "$group $date";
+		$group=format_group($r[0]['group_id']);
+		echo "<br><orange>$quiz_name</orange> $group $date<br><br>";
 		echo "<table><thead><th>Id<th>Student<th>$i18n_grade<th>$i18n_points<th>Start<th>Comment";
 		echo "$collect";
 		echo '</table><br><br><br>';
 		echo "<br><br><green>CSV for copy paste</green><br><br>";
-		echo "Id;$i18n_last_name;$i18n_first_name;$i18n_grade;$i18n_points<br>";
+		echo "Id;$i18n_last_name;$i18n_first_name;$i18n_grade;$i18n_points;$i18n_group<br>";
 		foreach($csv as $v) { 
 			echo "$v<br>";
 		}
@@ -641,11 +663,11 @@ function quiz_results() {/*{{{*/
 function format_group($id, $link=1) {/*{{{*/
 	$r=$_SESSION['krr']->query("SELECT group_name FROM groups WHERE id=$1", array($id));
 	if(empty($r[0])) { return; } 
-	$gname=$r[0]['group_name'];
+	$name=$r[0]['group_name'];
 	if($link==1) { 
-		return "<form style='display:inline' action=admin.php method=post><input type=hidden name=manage_students[group_id] value='$id'><input type=submit name=manage_students[group_name] value='$gname'></form>";
+		return "<a class=blink href=?manage_students=$id>$name</a>";
 	} else {
-		return "<green>$gname</green>"; 
+		return "<green>$name</green>"; 
 	}
 }
 /*}}}*/
@@ -737,7 +759,7 @@ function main() {/*{{{*/
 		if(isset($_GET['quiz_results']))       { quiz_results(); }
 		if(isset($_GET['quizes_results']))     { quizes_summary(); quizes_results(); }
 		if(isset($_GET['quiz_summary']))       { quiz_summary(); }
-		if(isset($_GET['max']))                { quiz_summary_max(); }
+		if(isset($_GET['quiz_summary_max']))   { quiz_summary_max(); }
 		if(isset($_GET['quizes_configure']))   { quizes_configure(); }
 		if(isset($_GET['students_list']))      { students_list(); }
 

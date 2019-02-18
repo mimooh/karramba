@@ -20,7 +20,7 @@ function manage_students() {/*{{{*/
 	$group=group_droplist($_GET['manage_students']);
 	$r=$_SESSION['krr']->query("SELECT * FROM students WHERE group_id=$1 ORDER BY last_name, first_name", array($_GET['manage_students']));
 	echo "<table>";
-	echo "<tr><th>lp<th>$i18n_last_name<th>$i18n_first_name<th>index<th>$i18n_password<th>$i18n_group<th>update";
+	echo "<tr><th>Id<th>$i18n_last_name<th>$i18n_first_name<th>index<th>$i18n_password<th>$i18n_group<th>update";
 	$i=1;
 	foreach($r as $k=>$v) { 
 		echo "<form method=post><tr>";
