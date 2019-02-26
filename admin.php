@@ -507,7 +507,7 @@ function quiz_summary() {/*{{{*/
 		} else {
 			$collect.="<tr><td>$i<td>$last_name $first_name<td><green>$group_name</green><td><a href=?debug_student_quiz=$debug_student_quiz class=blink>$grade</a><td>$points<td>$started<td>";
 		}
-		$csv[]="$last_name $first_name;$grade;$points";
+		$csv[]="$group_name;$last_name $first_name;$grade;$points";
 		$i++;
 	}
 

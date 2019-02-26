@@ -1,7 +1,7 @@
 <?PHP
 function group_droplist($group_id) {/*{{{*/
 	$r=$_SESSION['krr']->query("SELECT * FROM groups WHERE id=$1 ORDER BY group_name", array($group_id));
-	$out="<select name='group'>";
+	$out="<select name=post[group_id]>";
 	$out.="<option value=".$r[0]['id'].">".$r[0]['group_name']."</option>";
 	$out.="<option value=-1></option>";
 
@@ -20,18 +20,19 @@ function manage_students() {/*{{{*/
 	$group=group_droplist($_GET['manage_students']);
 	$r=$_SESSION['krr']->query("SELECT * FROM students WHERE group_id=$1 ORDER BY last_name, first_name", array($_GET['manage_students']));
 	echo "<table>";
-	echo "<tr><th>Id<th>$i18n_last_name<th>$i18n_first_name<th>index<th>$i18n_password<th>$i18n_group<th>update";
+	echo "<tr><th>lp<th>$i18n_last_name<th>$i18n_first_name<th>$i18n_password<th>$i18n_group<th>update<th>index";
 	$i=1;
 	foreach($r as $k=>$v) { 
 		echo "<form method=post><tr>";
-		echo "<input type=hidden name=id value=$v[id]>";
+		echo "<input type=hidden name=post[id] value=$v[id]>";
 		echo "<td>$i";
-		echo "<td><input type=text name=last_name value=$v[last_name]>";
-		echo "<td><input type=text name=first_name value=$v[first_name]>";
-		echo "<td><input type=text name=index value=$v[index]>";
-		echo "<td><input  style='background:wheat' type=text name=password value=$v[password]>";
+		echo "<td><input type=text name=post[last_name] value=$v[last_name]>";
+		echo "<td><input type=text name=post[first_name] value=$v[first_name]>";
+		echo "<td><input  style='background:#f88' type=text name=post[password] value=$v[password]>";
 		echo "<td>$group";
-		echo "<td><input type=submit name=update_student value='update'></form>";
+		echo "<td><input type=submit name=update_student value='update'>";
+		echo "<td style='opacity:0.1; width:10px; color: #fff'><input size=1 type=text name=post[index] value=$v[index]>";
+		echo "</form>";
 		$i++;
 	}
 	echo "</table>";
@@ -39,10 +40,11 @@ function manage_students() {/*{{{*/
 }
 /*}}}*/
 function update_student() {/*{{{*/
+	# psql karramba -c "select * from students";
 	if(!isset($_POST['update_student'])) { return; }
-	unset($_POST['update_student']);
-	$r=$_SESSION['krr']->query("UPDATE students SET last_name=$2, first_name=$3, index=$4, password=$5, group_id=$6 WHERE id=$1", fix_nulls($_POST));
-	$_SESSION['krr']->msg($_POST['last_name']. " updated");
+	$uu=$_SESSION['krr']->prepare_pg_update($_POST['post']);
+	$r=$_SESSION['krr']->query("UPDATE students SET $uu WHERE id=$1", fix_nulls($_POST['post']));
+	$_SESSION['krr']->msg($_POST['post']['last_name']. " updated");
 }
 /*}}}*/
 function students_list() {/*{{{*/

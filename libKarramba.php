@@ -124,6 +124,32 @@ class karramba {/*{{{*/
 		}
     }
 /*}}}*/
+
+	public function prepare_pg_insert($arr) {/*{{{*/
+		// Prepare $keys and $dolars from $_POST['arr'] for the query:
+		// Example $arr=array("name"=>"Kowalski", "telefon"=>"612");
+		// query("INSERT INTO przewozy($keys) VALUES($dolars) RETURNING id", $_POST['arr']);
+		$keys=array_keys($arr);
+		$dolars=[];
+		foreach(array_keys($keys) as $k) {
+			$dolars[]="\$".($k+1);
+		}
+		return array('keys'=>join(",", $keys), 'dolars'=>join(",", $dolars));
+	}
+/*}}}*/
+	public function prepare_pg_update($arr) {/*{{{*/
+		// Example $arr=array("name"=>"Kowalski", "telefon"=>"612");
+		// $uu="name=$1, telefon=$2
+		// query("UPDATE t set $uu WHERE id=1"), $_POST['arr']);
+		
+		$uu=[];
+		foreach(array_keys($arr) as $k=>$v) {
+			$uu[]="$v=\$".($k+1);
+		}
+		return implode(", ",$uu);
+	}
+/*}}}*/
+
 	public function fatal($msg) {/*{{{*/
 		echo "<fatal> $msg </fatal>";
 		echo "<br><br><br><br><br><br><a href=".$_SESSION['home_url']."><img id=home src=css/home.svg></a>";
