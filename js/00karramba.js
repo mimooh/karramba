@@ -2,8 +2,14 @@ $(function()  {
 	var page=1;
 
 	$('msg').delay(800).fadeOut(2000);
+	$("body").on("click", "#finished_selecting_groups",function() {
+		if($(this).css("opacity")==1) {
+			$(this).closest("form").submit();
+			$("#groups_list").slideUp(200);
+		}
+	});
 
-	$("body").on("click", "#finished_selecting_groups",function() {//{{{
+	$("body").on("click", "#groups_list",function() {//{{{
 		var collect_groups_ids=[];
 		var collect_quizes_ids=[];
 		$(".div-yes.groups").each(function() {
@@ -14,7 +20,11 @@ $(function()  {
 		});
 		$(".groups_collector_ids").val(collect_groups_ids.join());
 		$(".quizes_collector_ids").val(collect_quizes_ids.join());
-		$("#groups_list").slideUp(200);
+		if(collect_quizes_ids.length>0 && collect_groups_ids.length>0) { 
+			$('#finished_selecting_groups').css({ "background": "#06a", "opacity": "1"});
+		} else {
+			$('#finished_selecting_groups').css({ "background": "none", "opacity": "0.3"});
+		}
 	});
 
 //}}}

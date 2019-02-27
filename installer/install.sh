@@ -189,6 +189,7 @@ CREATE OR REPLACE VIEW r AS
 	randomized_quizes.student_finished,
     randomized_quizes.student_deadline,
 	quizes_instances.quiz_deactivation,
+	quizes_instances.pin,
 
 	randomized_quizes.student_answers_vector,
 	randomized_quizes.correct_answers_vector,

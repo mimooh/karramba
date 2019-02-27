@@ -52,9 +52,9 @@ i18n_quiz_active_until              ; Aktywny do
 i18n_quiz_disabled                  ; Test jest niedostępny
 i18n_quiz_name                      ; Nazwa testu
 i18n_quiz_submited_before	        ; Błąd: Rozwiązałeś ten test wcześniej 
-i18n_quizes_configure               ; Konfiguruj testy
+i18n_quizes_configure               ; Config
 i18n_quizes_results                 ; Wyniki
-i18n_run_quizes                     ; Przeprowadź test
+i18n_run_quizes                     ; Uruchom
 i18n_saved                          ; Zapisano zmiany
 i18n_select                         ; Wybierz
 i18n_select_groups                  ; Wybierz grupy

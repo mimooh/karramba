@@ -72,8 +72,11 @@ function check_cheetaz(){/*{{{*/
 /*}}}*/
 function choose_quiz() {/*{{{*/
 	// After student is logged he needs to see the quizes for him
+	// quiz_deactivation IS NULL means the quiz has expired
+	# psql karramba -c "SELECT student,pin,quiz_deactivation from r "
 	echo "<br>";
-	$hanging=$_SESSION['krr']->query("SELECT randomized_id,quiz_instance_id,group_name,quiz_name,student_deadline FROM r WHERE student_id=$1 AND student_finished IS NULL", array($_SESSION['student_id']));
+	$hanging=$_SESSION['krr']->query("SELECT randomized_id,quiz_instance_id,group_name,quiz_name,student_deadline FROM r 
+	WHERE student_id=$1 AND quiz_deactivation IS NOT NULL AND student_finished IS NULL", array($_SESSION['student_id']));
 	if(!empty($hanging[0])) {
 		extract($hanging[0]);
 		$_SESSION['krr']->cannot($_SESSION['i18n_need_to_complete']);
@@ -145,6 +148,7 @@ function is_student_allowed() {/*{{{*/
 /*}}}*/
 function which_quiz_to_serve() {/*{{{*/
 	// Either the interrupted quiz or the new quiz 
+	# psql karramba -c "SELECT quiz_name,student,group_name,student_finished,student_deadline, quiz_deactivation,student_answers_vector  FROM r"
 	$hanging=$_SESSION['krr']->query("SELECT randomized_id,student_started FROM r WHERE student_id=$1 AND student_finished IS NULL", array($_SESSION['student_id']));
 
 	if(!empty($hanging[0])) {
@@ -233,6 +237,7 @@ function make_randomized_quiz_sections() {/*{{{*/
 	$rr=$krr->query("SELECT quiz_id FROM quizes_instances WHERE id=$1", array($_GET['quiz_instance_id']));
 	$qid=$rr[0]['quiz_id'];
 	$rr=$krr->query("SELECT quizes.id as qid, quizes.sections, quizes.how_many, questions.id as question_id FROM questions LEFT JOIN quizes on questions.quiz_id=quizes.id WHERE questions.deleted=FALSE AND quizes.id=$1 ORDER BY questions.id", array($qid));
+	if(empty($rr)) { $_SESSION['krr']->fatal("Quiz has no questions"); }
 	$sections=$rr[0]['sections'];
 	$how_many=$rr[0]['how_many'];
 	if(empty($sections)) { $sections=1; }

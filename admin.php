@@ -42,6 +42,7 @@ function teacher_do_login(){/*{{{*/
 	$row=$krr->query("SELECT id as teacher_id, last_name, first_name, password FROM teachers WHERE email=$1", array($_POST['teacher_email']));
 
 	if(isset($row) && $row[0]['password']==$_POST['password']) {
+		unset($row[0]['password']);
 		$_SESSION+=$row[0];
 		$_SESSION['teacher_in']=1;
 		header("Location: admin.php");
@@ -101,15 +102,14 @@ function select_groups_form() {/*{{{*/
 	<FORM method=POST>
 		<div style='width:1px'><help title='".$_SESSION['i18n_help_select_groups']."'></help></div>
 		<div style='position: fixed; left:0px; top:0px;'>
-			<input input type=submit value='".$_SESSION['i18n_activate_quiz']."' id='finished_selecting_groups'>
-			<input input type=submit value='".$_SESSION['i18n_cancel']."'>
+			<input class=blink style='opacity:0.3; background:none'  type=button value='".$_SESSION['i18n_activate_quiz']."' id='finished_selecting_groups'>
+			<input type=submit value='".$_SESSION['i18n_cancel']."'>
 		</div>
 		
 		<input type=hidden name=run_quiz>
 		<input class=groups_collector_ids type=hidden name=active_groups_ids value=''>
 		<input class=quizes_collector_ids type=hidden name=active_quizes_ids value=''>
 	</FORM>";
-	# 2017.wrz: foreach($_SESSION['krr']->query("SELECT * FROM quizes WHERE teacher_id=$1 ORDER BY quiz_name", array($_SESSION['teacher_id'])) as $arr) { 
 	foreach($_SESSION['krr']->query("SELECT * FROM quizes WHERE id IN (SELECT quiz_id FROM quizes_owners WHERE teacher_id=$1) ORDER BY quiz_name", array($_SESSION['teacher_id'])) as $arr) { 
 		extract($arr);
 		$varClass=isChecked(0);
@@ -166,10 +166,23 @@ function final_animation() {/*{{{*/
 
 }
 /*}}}*/
+
 function end_expired_quizes() {/*{{{*/
-	// If empty student_finished AND student_deadline has passed now() then the randomized_quiz is expired. 
+	// If empty student_finished AND student_deadline has passed now() then the randomized_quiz has expired. 
 	// We set grade=2 and points=0 for each such quiz.
-	$_SESSION['krr']->query("UPDATE randomized_quizes SET points=0, grade=2, student_finished=now() WHERE student_finished IS NULL AND student_deadline + INTERVAL '1 MINUTES' < NOW() ");
+	# psql karramba -c "SELECT points,grade,quiz_id,student_id,student_started,student_finished,student_deadline,teacher_id  from randomized_quizes"
+	# psql karramba -c "SELECT pin,quiz_deactivation from quizes_instances where quiz_deactivation is not null"
+	# psql karramba -c "SELECT student,pin,quiz_deactivation,student_finished from r "
+	# psql karramba -c "SELECT * from questions"
+	$_SESSION['krr']->query("
+	UPDATE randomized_quizes SET points=0, grade=2, student_finished=now() 
+	WHERE 
+	student_finished IS NULL AND 
+	student_deadline + INTERVAL '1 MINUTES' < NOW() AND
+	teacher_id = $1
+	",
+	array($_SESSION['teacher_id'])
+	);
 }
 /*}}}*/
 function create_pin() {/*{{{*/
@@ -724,7 +737,7 @@ function menu(){/*{{{*/
 		  <a href=?students_list class=rlink>Students</a>
 		  <div style='float:right; margin-right:10px'>
 		  $debug_menu
-		  <a href=?q class=rlink>$i18n_logout $last_name $first_name</a>
+		  <a href=?q class=rlink>$i18n_logout</a>
 		  </div>
 		  </teacher_menu>
 		  ";

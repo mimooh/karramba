@@ -52,9 +52,9 @@ i18n_quiz_active_until              ; Active until
 i18n_quiz_disabled                  ; Quiz is disabled
 i18n_quiz_name                      ; Quiz Name
 i18n_quiz_submited_before			; Error: Your quiz has been submitted before
-i18n_quizes_configure               ; Configure quizes
+i18n_quizes_configure               ; Config
 i18n_quizes_results                 ; Results
-i18n_run_quizes                     ; Run quizes
+i18n_run_quizes                     ; Run
 i18n_saved                          ; Changes have been saved
 i18n_select                         ; Select
 i18n_select_groups                  ; Select groups

@@ -56,18 +56,6 @@ function animation_on_quiz_complete($points) {/*{{{*/
 			50%  { left:${final_anim_left1}px ; top:${final_anim_top1}px ; }
 			100% { left:${final_anim_left2}px ; top:${final_anim_top2}px ; }
 		}
-		rect1 {
-			position:fixed;
-			left: ${final_anim_left2}px;
-			top: ${final_anim_left1}px;
-			display: block;
-			width: ${final_anim_left0}px;
-			height: ${final_anim_left1}px;
-			min-height: 50px;
-			min-width: 50px;
-			background-color: $final_anim_color1;
-			opacity: 0.$final_anim_time;
-		}
 		pins {
 			font-size: 20px;
 			opacity: 0.2;
@@ -78,7 +66,6 @@ function animation_on_quiz_complete($points) {/*{{{*/
 
 	</style>
 	<div id=movingObject style='padding:20px; text-align: center'>$pin</div>
-	<rect1></rect1>
 	";
 
 	for($i=0; $i<500; $i++) { 
