@@ -231,6 +231,7 @@ function run_quiz(){/*{{{*/
 				if(in_array("",$arr)) { $krr->fatal("$i18n_something_went_wrong"); }
 				$krr->query("INSERT INTO quizes_instances (quiz_id, group_id, teacher_id, quiz_deactivation, pin, final_anim_color0, final_anim_color1, final_anim_time, final_anim_left0, final_anim_left1, final_anim_left2, final_anim_top0, final_anim_top1, final_anim_top2) 
 				VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)", $arr);
+				header("Location: ?run_quizes");
 			}
 		} else {
 			$krr->cannot("You are running this quiz already!");
@@ -415,12 +416,18 @@ function validate_quiz_question($q, $q_id) {/*{{{*/
 }
 /*}}}*/
 function validate_quiz_configuration() {/*{{{*/
-	// how_many cannot exceed the total number of questions in database
 	extract($_SESSION);
 	$r=$krr->query("SELECT * FROM quizes WHERE id=$1", array($_GET['quiz_configure']));
+
+	// how_many cannot exceed the total number of questions in database
 	$how_many=$krr->query("SELECT count(*) AS defined FROM questions WHERE quiz_id=$1 AND deleted = FALSE", array($_GET['quiz_configure']));
 	if($how_many[0]['defined'] < $r[0]['how_many']) {
 		$krr->fatal("$i18n_too_few_questions_for_quiz: ".$r[0]['quiz_name']);
+	}
+
+	if(round($r[0]['how_many'] / $r[0]['sections']) < 2) {
+		$krr->fatal("The ratio:<br><br><br><red>$i18n_how_many_questions_long</red><br>----------------------------------------------------<br><red>$i18n_how_many_sections</red><br><br><br>must be > 2<br><br><a class=blink href=?$_SERVER[QUERY_STRING]>Fix your quiz</a>");
+		
 	}
 }
 /*}}}*/
@@ -493,7 +500,7 @@ function monitor_logins() {/*{{{*/
 	echo "</table>";
 }
 /*}}}*/
-function quiz_summary() {/*{{{*/
+function quiz_results_by_name() {/*{{{*/
 	// All results for a single quiz, i.e. all groups' results in the quiz "Linear Algebra". 
 	// We should filter out the results older than 12 months or so.
 	extract($_SESSION);
@@ -506,7 +513,7 @@ function quiz_summary() {/*{{{*/
 	LEFT JOIN quizes q ON r.quiz_id=q.id
 	WHERE quiz_id=$1 AND last_name IS NOT NULL ORDER BY s.last_name
 	";
-	$r=$krr->query($query, array($_GET['quiz_summary'])); 
+	$r=$krr->query($query, array($_GET['quiz_results_by_name'])); 
 	if(empty($r)) { echo "<orange style='margin-left:20px'>$i18n_empty_results</orange>"; return; }
 		
 	$collect='';
@@ -527,7 +534,7 @@ function quiz_summary() {/*{{{*/
 	if(!empty($collect)) { 
 		$quiz_name=$r[0]['quiz_name'];
 		echo "<orange style='margin-left:20px'>$quiz_name</orange>";
-		echo "<a href=?quiz_summary_max=$_GET[quiz_summary] class=blink>$quiz_name MAX</a> ";
+		echo "<a href=?quiz_results_by_name_max=$_GET[quiz_results_by_name] class=blink>$quiz_name MAX</a> ";
 		echo "<table><thead><th>Id<th>Student<th>Group<th>$i18n_grade<th>$i18n_points<th>Start<th>Comment";
 		echo "$collect";
 		echo '</table><br><br><br>';
@@ -538,7 +545,7 @@ function quiz_summary() {/*{{{*/
 	}
 } 
 /*}}}*/
-function quiz_summary_max() {/*{{{*/
+function quiz_results_by_name_max() {/*{{{*/
 	extract($_SESSION);
 	quizes_summary();
 
@@ -551,7 +558,7 @@ function quiz_summary_max() {/*{{{*/
 	GROUP BY s.last_name, s.first_name, g.group_name, q.quiz_name
 	ORDER BY g.group_name desc, s.last_name ASC";
 		
-	$r=$krr->query($query, array($_GET['quiz_summary_max'])); 
+	$r=$krr->query($query, array($_GET['quiz_results_by_name_max'])); 
 	if(empty($r)) { $krr->msg("$i18n_empty_results"); return; }
 		
 	$collect='';
@@ -565,7 +572,7 @@ function quiz_summary_max() {/*{{{*/
 	}
 	if(!empty($collect)) { 
 		$quiz_name=$r[0]['quiz_name'];
-		echo "<a style='margin-left:20px' href=?quiz_summary=$_GET[quiz_summary_max] class=blink>$quiz_name</a>";
+		echo "<a style='margin-left:20px' href=?quiz_results_by_name=$_GET[quiz_results_by_name_max] class=blink>$quiz_name</a>";
 		echo "<orange>$quiz_name MAX</orange><br>";
 		echo "<table><thead><th>Id<th>Student<th>Group<th>$i18n_points";
 		echo "$collect";
@@ -581,13 +588,13 @@ function quizes_summary() {/*{{{*/
 	$r=$_SESSION['krr']->query("SELECT quiz_name, id FROM quizes WHERE id in (SELECT quiz_id FROM quizes_owners WHERE teacher_id=$1) ORDER BY 1" , array($_SESSION['teacher_id']));
 	if(!empty($r)) { 
 		foreach($r as $q){
-			echo "<a href=?quiz_summary=$q[id] class=blink>$q[quiz_name]</a> ";
+			echo "<a href=?quiz_results_by_name=$q[id] class=blink>$q[quiz_name]</a> ";
 		}
 	}
 	echo "<br><br>";
 }
 /*}}}*/
-function quizes_results() {/*{{{*/
+function quizes_results_by_date() {/*{{{*/
 	extract($_SESSION);
 	# psql karramba -c "select * from quizes_owners"
 	# psql karramba -c "select * from quizes"
@@ -615,7 +622,7 @@ function quizes_results() {/*{{{*/
 		$teacher=mb_substr($last_name,0,10, "utf8");
 		$group=format_group($group_id,0);
 		echo "<tr><td>$i<td>$quiz_activation<td>$group<td> <orange>$quiz_name</orange><td>$last_name<td> 
-		<FORM method=POST action=admin.php?quiz_results=$quiz_instance_id>
+		<FORM method=POST action=admin.php?quiz_results_by_date=$quiz_instance_id>
 		<input type=submit value='($count) $i18n_show'>
 		<input type=hidden name=quiz_activation value=$quiz_activation>
 		</FORM>
@@ -626,7 +633,7 @@ function quizes_results() {/*{{{*/
 	
 }
 /*}}}*/
-function quiz_results() {/*{{{*/
+function quiz_results_by_date() {/*{{{*/
 	extract($_SESSION);
 	$r=$krr->query("
 		SELECT g.group_name, q.quiz_name, r.student_started, r.points, r.grade, r.id AS debug_student_quiz, s.last_name, s.first_name, i.group_id, i.quiz_activation FROM randomized_quizes r
@@ -638,7 +645,7 @@ function quiz_results() {/*{{{*/
 		i.id = $1							
 		ORDER BY s.last_name, s.first_name
 		", 
-		array($_GET['quiz_results']));
+		array($_GET['quiz_results_by_date']));
 
 	$collect='';
 	$csv=[];
@@ -733,7 +740,7 @@ function menu(){/*{{{*/
 	echo "<teacher_menu> 
 		  <a href=?quizes_configure class=rlink>$i18n_quizes_configure</a>
 		  <a href=?run_quizes class=rlink>$i18n_run_quizes</a>
-		  <a href=?quizes_results class=rlink>$i18n_quizes_results</a>
+		  <a href=?quizes_results_by_date class=rlink>$i18n_quizes_results</a>
 		  <a href=?students_list class=rlink>Students</a>
 		  <div style='float:right; margin-right:10px'>
 		  $debug_menu
@@ -758,23 +765,23 @@ function main() {/*{{{*/
 	if(isset($_SESSION['teacher_in'])) {
 		menu();
 		echo "<teacher_body>";
-		if(isset($_GET['debug_student_quiz'])) { $_SESSION['krr']->db_serve_interrupted_quiz($_GET['debug_student_quiz'], 1); }
-		if(isset($_POST['update_student']))    { update_student(); }
-		if(isset($_GET['manage_students']))    { manage_students(); }
-		if(isset($_POST['do_modify_owners']))  { do_modify_owners(); }
-		if(isset($_POST['quiz_add']))          { quiz_add(); }
-		if(isset($_POST['quiz_remove']))       { quiz_remove(); }
-		if(isset($_POST['quiz_update']))       { quiz_update(); }
-		if(isset($_GET['quiz_configure']))     { quiz_configure(); }
-		if(isset($_POST['run_quiz']))          { run_quiz(); }
-		if(isset($_POST['stop_quiz']))         { stop_quiz(); }
-		if(isset($_GET['run_quizes']))         { run_quizes(); monitor_logins(); }
-		if(isset($_GET['quiz_results']))       { quiz_results(); }
-		if(isset($_GET['quizes_results']))     { quizes_summary(); quizes_results(); }
-		if(isset($_GET['quiz_summary']))       { quiz_summary(); }
-		if(isset($_GET['quiz_summary_max']))   { quiz_summary_max(); }
-		if(isset($_GET['quizes_configure']))   { quizes_configure(); }
-		if(isset($_GET['students_list']))      { students_list(); }
+		if(isset($_GET['debug_student_quiz']))       { $_SESSION['krr']->db_serve_interrupted_quiz($_GET['debug_student_quiz'], 1); }
+		if(isset($_POST['update_student']))          { update_student(); }
+		if(isset($_GET['manage_students']))          { manage_students(); }
+		if(isset($_POST['do_modify_owners']))        { do_modify_owners(); }
+		if(isset($_POST['quiz_add']))                { quiz_add(); }
+		if(isset($_POST['quiz_remove']))             { quiz_remove(); }
+		if(isset($_POST['quiz_update']))             { quiz_update(); }
+		if(isset($_GET['quiz_configure']))           { quiz_configure(); }
+		if(isset($_POST['run_quiz']))                { run_quiz(); }
+		if(isset($_POST['stop_quiz']))               { stop_quiz(); }
+		if(isset($_GET['run_quizes']))               { run_quizes(); monitor_logins(); }
+		if(isset($_GET['quizes_results_by_date']))   { quizes_summary(); quizes_results_by_date(); }
+		if(isset($_GET['quiz_results_by_date']))     { quiz_results_by_date(); }
+		if(isset($_GET['quiz_results_by_name']))     { quiz_results_by_name(); }
+		if(isset($_GET['quiz_results_by_name_max'])) { quiz_results_by_name_max(); }
+		if(isset($_GET['quizes_configure']))         { quizes_configure(); }
+		if(isset($_GET['students_list']))            { students_list(); }
 
 		echo "</teacher_body>";
 	}

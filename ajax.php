@@ -3,7 +3,7 @@ session_name(getenv("KARRAMBA_ADM_SESSION_NAME"));
 require_once("libKarramba.php");
 function getStudentLogin($str) {/*{{{*/
 	$result=[];
-	foreach($_SESSION['krr']->query("SELECT s.id, s.last_name, s.first_name, g.group_name FROM students s, groups g WHERE s.last_name ILIKE $1 AND s.group_id=g.id ORDER BY last_name", array($str.'%')) as $row) {
+	foreach($_SESSION['krr']->query("SELECT s.id, s.last_name, s.first_name, g.group_name FROM students s, groups g WHERE s.last_name ILIKE $1 AND s.group_id=g.id ORDER BY last_name, first_name, id", array($str.'%')) as $row) {
 		extract($row);
 		$result[]=array("$last_name $first_name [$group_name]", "$id");
 	}
