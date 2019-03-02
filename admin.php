@@ -74,6 +74,16 @@ function quizes_configure(){/*{{{*/
 		GROUP BY qz.id ORDER BY 1" , 
 		array($_SESSION['teacher_id'])
 	);
+	// Hard to make in a single query: collect new quizes which have no questions
+	// hence cannot check q.deleted above
+	$r+=$krr->query("
+		SELECT qz.quiz_name, qz.how_many, qz.timeout, qz.id, count(q.*) FROM quizes qz
+		LEFT JOIN questions q on (qz.id=q.quiz_id) 
+			WHERE 
+			qz.id in (SELECT quiz_id FROM quizes_owners WHERE teacher_id=$1) 
+		GROUP BY qz.id HAVING count(q.*)=0 ORDER BY 1" , 
+		array($_SESSION['teacher_id'])
+	);
 	if(!empty($r)) { 
 		foreach($r as $q){
 			extract($q);
