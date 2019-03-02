@@ -80,6 +80,7 @@ CREATE TABLE teachers (id SERIAL PRIMARY KEY, first_name text, last_name text, e
 CREATE TABLE students (id SERIAL PRIMARY KEY, first_name text, last_name text, index int, group_id int, password text);
 CREATE TABLE groups (id SERIAL PRIMARY KEY, group_name text);
 CREATE TABLE used_questions(id SERIAL PRIMARY KEY, quiz_id int, question_id int);
+ALTER TABLE used_questions ADD CONSTRAINT u_q FOREIGN KEY (question_id) REFERENCES questions(id) ON DELETE RESTRICT; 
 
 INSERT INTO teachers (first_name , last_name , email , password) VALUES ('Jaimie' , 'Lannister' , 'a@com' , '1');
 INSERT INTO teachers (first_name , last_name , email , password) VALUES ('Tyrion' , 'Lannister' , 'b@com' , '1');
