@@ -480,7 +480,6 @@ function quiz_update() {/*{{{*/
 			array_unshift($v, $_GET['quiz_configure']);
 			$krr->query("INSERT INTO questions(quiz_id , question , answer0 , answer1 , answer2 , correct_vector) VALUES($1, $2, $3, $4, $5, $6)", $v, 1);
 		}
-		$mm=$krr->query("SELECT ");
 		$krr->query("UPDATE quizes SET how_many=$1, timeout=$2, grades_thresholds=$3, sections=$4 WHERE id=$5", array($_POST['how_many'], $_POST['timeout'], $_POST['grades_thresholds'], $_POST['sections'], $_GET['quiz_configure']));
 		unset($_SESSION['textarea_save']);
 	}
