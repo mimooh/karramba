@@ -71,7 +71,7 @@ sudo -u postgres psql -lqt | cut -d \| -f 1 | grep -qw 'karramba' && {
 #}}}
 # psql#{{{
 sudo -u postgres psql << EOF
-CREATE DATABASE karramba;
+CREATE DATABASE karramba WITH ENCODING='UTF8';
 CREATE USER $KARRAMBA_DB_USER WITH PASSWORD '$KARRAMBA_DB_PASS';
 
 \c karramba;
@@ -79,6 +79,7 @@ CREATE USER $KARRAMBA_DB_USER WITH PASSWORD '$KARRAMBA_DB_PASS';
 CREATE TABLE teachers (id SERIAL PRIMARY KEY, first_name text, last_name text, email text, password text);
 CREATE TABLE students (id SERIAL PRIMARY KEY, first_name text, last_name text, index int, group_id int, password text);
 CREATE TABLE groups (id SERIAL PRIMARY KEY, group_name text);
+CREATE TABLE used_questions(id SERIAL PRIMARY KEY, quiz_id int, question_id int);
 
 INSERT INTO teachers (first_name , last_name , email , password) VALUES ('Jaimie' , 'Lannister' , 'a@com' , '1');
 INSERT INTO teachers (first_name , last_name , email , password) VALUES ('Tyrion' , 'Lannister' , 'b@com' , '1');

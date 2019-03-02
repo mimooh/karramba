@@ -61,10 +61,19 @@ function quizes_configure(){/*{{{*/
 	# psql karramba -c "select * from quizes_owners"
 	extract($_SESSION);
 	echo "<table> <thead><th>$i18n_quiz<th>$i18n_all_questions<th>$i18n_how_many_questions_short<th>$i18n_how_much_time_short<th>$i18n_delete";
-	#$r=$krr->query("SELECT quiz_id FROM quizes_owners WHERE teacher_id=$1" , array($_SESSION['teacher_id']));
-	#$r=$krr->query("SELECT l.quiz_name, l.how_many, l.timeout, l.id, count(q.*) FROM quizes l LEFT JOIN questions q on (l.id=q.quiz_id) WHERE q.deleted=FALSE AND l.id in (SELECT quiz_id FROM quizes_owners WHERE teacher_id=$1) OR quiz_name='ExampleQuiz' GROUP BY l.id ORDER BY 1" , array($_SESSION['teacher_id']));
-	# TODO: fix the concept of deleted quizes, see todo.txt
-	$r=$krr->query("SELECT l.quiz_name, l.how_many, l.timeout, l.id, count(q.*) FROM quizes l LEFT JOIN questions q on (l.id=q.quiz_id) WHERE l.id in (SELECT quiz_id FROM quizes_owners WHERE teacher_id=$1) OR quiz_name='ExampleQuiz' GROUP BY l.id ORDER BY 1" , array($_SESSION['teacher_id']));
+
+	$r=$krr->query("
+		SELECT qz.quiz_name, qz.how_many, qz.timeout, qz.id, count(q.*) FROM quizes qz
+		LEFT JOIN questions q on (qz.id=q.quiz_id) 
+			WHERE 
+			qz.id in (SELECT quiz_id FROM quizes_owners WHERE teacher_id=$1) 
+			AND
+			q.deleted = FALSE
+			OR 
+			quiz_name='ExampleQuiz' 
+		GROUP BY qz.id ORDER BY 1" , 
+		array($_SESSION['teacher_id'])
+	);
 	if(!empty($r)) { 
 		foreach($r as $q){
 			extract($q);
@@ -329,9 +338,9 @@ function display_configured_quiz($textarea) { /*{{{*/
 	manage_owners();
 	upload_images_form(); 
 	$r=$krr->query("SELECT quiz_name, how_many, timeout, grades_thresholds, sections FROM quizes WHERE id=$1" , array($_GET['quiz_configure']))[0];
-	if(empty($r['how_many'])) { $how_many=1; } else { $how_many=$r['how_many']; }
-	if(empty($r['timeout']))  { $timeout=1; } else { $timeout=$r['timeout']; }
+	if(empty($r['how_many']))  { $how_many=5; } else { $how_many=$r['how_many']; }
 	if(empty($r['sections']))  { $sections=1; } else { $sections=$r['sections']; }
+	if(empty($r['timeout']))   { $timeout=5; } else { $timeout=$r['timeout']; }
 	if(empty($r['grades_thresholds'])) { $grades_thresholds='40%:3.0; 50%:3.5; 65%:4.0; 75%:4.5; 85%:5.0'; } else { $grades_thresholds=$r['grades_thresholds']; }
 	$display="<table>";
 	if($_GET['quiz_configure']==1) {
@@ -466,17 +475,28 @@ function quiz_update() {/*{{{*/
 
 	if(!isset($err)) {
 		$krr->query("UPDATE questions SET deleted = TRUE WHERE quiz_id=$1", array($_GET['quiz_configure']));
+		remove_unused_questions();
 		foreach($collect as $v) {
 			array_unshift($v, $_GET['quiz_configure']);
 			$krr->query("INSERT INTO questions(quiz_id , question , answer0 , answer1 , answer2 , correct_vector) VALUES($1, $2, $3, $4, $5, $6)", $v, 1);
 		}
+		$mm=$krr->query("SELECT ");
 		$krr->query("UPDATE quizes SET how_many=$1, timeout=$2, grades_thresholds=$3, sections=$4 WHERE id=$5", array($_POST['how_many'], $_POST['timeout'], $_POST['grades_thresholds'], $_POST['sections'], $_GET['quiz_configure']));
 		unset($_SESSION['textarea_save']);
 	}
 	validate_quiz_configuration();
 }
-
 /*}}}*/
+function remove_unused_questions() { #{{{
+	#psql karramba -c "CREATE TABLE used_questions(id SERIAL PRIMARY KEY, quiz_id INT, question_id INT)";
+	#psql karramba -c "select * from used_questions order by question_id"
+	#psql karramba -c "select * from questions"
+	#psql karramba -c "select * from quizes order by id desc"
+
+	$_SESSION['krr']->query("DELETE FROM questions WHERE quiz_id=$1 AND id NOT IN (SELECT question_id FROM used_questions WHERE quiz_id=$1)", array($_GET['quiz_configure']));
+}
+/*}}}*/
+
 function quiz_add(){/*{{{*/
 	# psql karramba -c "select * from quizes"
 	# psql karramba -c "select * from quizes_owners order by quiz_id"

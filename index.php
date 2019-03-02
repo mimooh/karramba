@@ -35,14 +35,15 @@ function login_form(){/*{{{*/
 
 }/*}}}*/
 function do_login(){/*{{{*/
+	// Student can login with a pass or an index
 	extract($_SESSION);
 
 	if(empty($_POST['studentIdFromLogin'])) { $krr->msg($i18n_bad_login); return; }
 	if(empty($_POST['password']))           { $krr->msg($i18n_bad_login); return; }
 
-	$row=$krr->query("SELECT id as student_id, group_id, last_name, first_name, password FROM students WHERE id=$1", array($_POST['studentIdFromLogin']));
+	$row=$krr->query("SELECT id as student_id, group_id, last_name, first_name, password, index FROM students WHERE id=$1", array($_POST['studentIdFromLogin']));
 
-	if(isset($row) && $row[0]['password']==$_POST['password']) {
+	if(isset($row) && ($row[0]['password']==$_POST['password'] || $row[0]['index']==$_POST['password'])) {
 		$_SESSION+=$row[0];
 		$_SESSION['student']=$row[0]['last_name']." ".$row[0]['first_name'];
 		$_SESSION['in']=1;
@@ -255,7 +256,22 @@ function make_randomized_quiz_sections() {/*{{{*/
 	return implode(",", $collect);
 }
 /*}}}*/
+function register_used_questions($quiz_id,$questions_ids) { #{{{
+	// After the questions have been picked up we also register that these questions
+	// were ever used. This is the most reasonable way for update_quiz() to prevent
+	// the growing of the questions list on each save. That's because we cannot simply
+	// remove the old versions of questions and loose the history of student past quizes.
+
+	// DELETE FROM used_questions and INSERT INTO used_questions to prevent the duplicates
+
+	$_SESSION['krr']->query("DELETE FROM used_questions WHERE quiz_id=$1 AND question_id=ANY($2)", array($quiz_id, "{".implode(',', $questions_ids)."}"));
+	foreach($questions_ids as $qq) { 
+		$_SESSION['krr']->query("INSERT INTO used_questions(quiz_id,question_id) VALUES($1,$2)", array($quiz_id, $qq));
+	}
+}
+/*}}}*/
 function db_insert_randomized_quiz($questions,$answers,$cv,$ov,$qv) { /*{{{*/
+	
 	$timeout=$_SESSION['krr']->query("SELECT q.timeout FROM quizes q, quizes_instances i WHERE q.id=i.quiz_id AND i.id=$1", array($_GET['quiz_instance_id']))[0]['timeout'];
 	$deadline=date("Y-m-d H:i:s", strtotime("+ $timeout minutes"));
 
@@ -263,6 +279,8 @@ function db_insert_randomized_quiz($questions,$answers,$cv,$ov,$qv) { /*{{{*/
 	$query_params=array(join(",", $qv), join(",", $ov), join(",", $cv), $_SESSION['student_id'], $_GET['quiz_instance_id'], $r['quiz_id'], $r['teacher_id'], $deadline);
 
 	$id=$_SESSION['krr']->query("INSERT INTO randomized_quizes(questions_vector, order_vector, correct_answers_vector, student_id, quiz_instance_id, quiz_id, teacher_id, student_deadline) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id", $query_params)[0]['id'];
+	register_used_questions($r['quiz_id'], $qv);
+
 	$timeout=strtotime($deadline)-time();
 	return array('serve'=>'new_quiz', 'questions_presented'=>$questions,'answers_presented'=>$answers,'randomized_id'=>$id, 'timeout'=>$timeout);
 }/*}}}*/

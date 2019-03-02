@@ -1,1 +1,0 @@
-Move db history quizes to .txt files
