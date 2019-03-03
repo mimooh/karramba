@@ -40,6 +40,9 @@ class karramba {/*{{{*/
 	public function __construct(){
 		// KARRAMBA_LANG is setup in /etc/apache2/envvars
 		$lang=getenv("KARRAMBA_LANG");
+		if(is_dir("installer")) {  
+			die("The installer folder cannot be left in the karramba www tree. You need to remove it.");
+		}
 
 		foreach (file("messages/en.csv") as $row) {                                                                                   
 			$x=explode(";", $row);

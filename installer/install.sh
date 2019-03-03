@@ -4,47 +4,49 @@
 # If you are on a hosting server with users that cannot be trust and/or if you cannot write to /etc/apache2/envvars
 # then you need to find your way to propagate these variables for www-data user. Or just make them constants in
 # karramba code.
-basename `pwd` | grep -q installer || { echo "This script must be run from within karramba/installer/ directory"; exit; }
 
-KARRAMBA_DB_USER='karramba'  
-KARRAMBA_DB_PASS='secret'  
-KARRAMBA_DB_HOST='127.0.0.1'  
+# ====================== START OF CONFIG ============================
 
-KARRAMBA_LANG="en"	
+	KARRAMBA_DB_USER='karramba'  
+	KARRAMBA_DB_PASS='secret'   # You really need to change it here!
+	KARRAMBA_DB_HOST='127.0.0.1'  
 
-# Your email for DB failure reports, etc.
-KARRAMBA_NOTIFY="user@gmail.com"  
+	KARRAMBA_LANG="en"	
 
-# I have a separate tool where a new student can add himself. You can provide
-# an URL for "create a new student account" form. Nevermind otherwise.
-KARRAMBA_NEW_STUDENT_FORM_URL=""	  
+	# Your email for DB failure reports, etc.
+	KARRAMBA_NOTIFY="user@gmail.com"  
+	
+	# I have a separate tool where a new student can add himself. You can provide
+	# an URL for "create a new student account" form. Nevermind otherwise.
+	KARRAMBA_NEW_STUDENT_FORM_URL=""	  
+	
+	# I have a separate tool where a new student can add himself. You can provide
+	# a secret for students to use "create a new student account" form. Nevermind otherwise.
+	KARRAMBA_NEW_STUDENT_SECRET=""	  
+	
+	# If you need to share variables with another PHP system, then perhaps you want to match the session_name()
+	# Otherwise you don't need it.
+	KARRAMBA_ADM_SESSION_NAME='karramba_admin'
+	
+	# If students passwords are composed of digits only, you may set this to one.
+	# In android we can set the context keyboard to numbers then.
+	KARRAMBA_STUDENT_INT_PASS=0
+	
+	# Install spreadsheet support for teachers to download students results
+	SPREADSHEET_SUPPORT=0
+	
+	# Location of karramba on the disk
+	WWW_DIR="/var/www/ssl/karramba"
 
-# I have a separate tool where a new student can add himself. You can provide
-# a secret for students to use "create a new student account" form. Nevermind otherwise.
-KARRAMBA_NEW_STUDENT_SECRET=""	  
-
-# If you need to share variables with another PHP system, then perhaps you want to match the session_name()
-# Otherwise you don't need it.
-KARRAMBA_ADM_SESSION_NAME='karramba_admin'
-
-# If students passwords are composed of digits only, you may set this to one.
-# In android we can set the context keyboard to numbers then.
-KARRAMBA_STUDENT_INT_PASS=0
-
-# End of configuration. Run this shell script to setup the project. Then restart apache so that www user rereads his environent.
-
+# ====================== END OF CONFIG ============================
+	
+# Run this shell script to setup the project. 
 
 
 # init #{{{
 USER=`id -ru`
 [ "X$USER" == "X0" ] && { echo "Don't run as root / sudo"; exit; }
 
-[ "X$KARRAMBA_DB_PASS" == 'Xsecret' ] && { 
-	echo "KARRAMBA_DB_PASS needs to be changed from the default='secret'."; 
-	echo
-	exit;
-} 
-#}}}
 # www-data user needs DB vars. They are kept in www-data environment: /etc/apache2/envvars #{{{
 temp=`mktemp`
 sudo cat /etc/apache2/envvars | grep -v KARRAMBA_ > $temp
@@ -259,19 +261,18 @@ done
 # final#{{{
 echo;
 
-echo "Installing xls producer";
-sudo apt-get install composer php-xml php-gd php-mbstring php-zip
-cd ..
-composer require phpoffice/phpspreadsheet
-
-
+[ "X$SPREADSHEET_SUPPORT" == "X1" ] && { 
+	echo "Installing xls producer";
+	sudo apt-get install composer php-xml php-gd php-mbstring php-zip;
+	composer require phpoffice/phpspreadsheet;
+}
 
 echo "Restarting apache..."
 sudo service apache2 restart
 
-sudo chgrp -R www-data ../img/
-sudo chmod -R g+s ../img/
-sudo chmod -R 775 ../img/
+sudo chgrp -R www-data "$WWW_DIR/img/"
+sudo chmod -R g+s "$WWW_DIR/img/"
+sudo chmod -R 775 "$WWW_DIR/img/"
 
 echo "Default student: Snow Jon, password: 1"
 echo "Default teacher: a@com, password: 1"
