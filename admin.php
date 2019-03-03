@@ -2,6 +2,10 @@
 session_name(getenv("KARRAMBA_ADM_SESSION_NAME"));
 require_once("libKarramba.php");
 require_once("manage_students.php");
+require 'vendor/autoload.php';
+
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 function teacher_login_form(){/*{{{*/
 	extract($_SESSION);
@@ -535,7 +539,7 @@ function quiz_results_by_name() {/*{{{*/
 	extract($_SESSION);
 
 	quizes_summary();
-	$query="SELECT s.last_name, s.first_name, g.group_name, r.student_started, r.points, r.grade, q.quiz_name, r.id AS debug_student_quiz 
+	$query="SELECT s.last_name, s.first_name, g.id as group_id, g.group_name, r.student_started, r.points, r.grade, q.quiz_name, r.id AS debug_student_quiz 
 	FROM randomized_quizes r
 	LEFT JOIN students s ON r.student_id=s.id
 	LEFT JOIN groups g ON s.group_id=g.id
@@ -547,16 +551,18 @@ function quiz_results_by_name() {/*{{{*/
 		
 	$collect='';
 	$csv=[];
+	$csv[]=array("$i18n_last_name $i18n_first_name", "$i18n_grade", "$i18n_points", "$i18n_group");
 	$i=1;
 	foreach($r as $row) {
 		extract($row);
+		$gname=format_group($group_id);
 		$started=$krr->extractDate($student_started);
 		if(empty($points)) { 
-			$collect.="<tr><td>$i<td>$last_name $first_name<td><green>$group_name</green><td>-<td>-<td>$started<td><black>$i18n_didnt_complete</black>";
+			$collect.="<tr><td>$i<td>$last_name $first_name<td>-<td>-<td>$started<td>$gname<td><black>$i18n_didnt_complete</black>";
 		} else {
-			$collect.="<tr><td>$i<td>$last_name $first_name<td><green>$group_name</green><td><a href=?debug_student_quiz=$debug_student_quiz class=blink>$grade</a><td>$points<td>$started<td>";
+			$collect.="<tr><td>$i<td>$last_name $first_name<td><a href=?debug_student_quiz=$debug_student_quiz class=blink>$grade</a><td>$points<td>$started<td>$gname<td>";
 		}
-		$csv[]="$group_name;$last_name $first_name;$grade;$points";
+		$csv[]=array("$last_name $first_name", "$grade" , "$points", "$group_name");
 		$i++;
 	}
 
@@ -564,27 +570,53 @@ function quiz_results_by_name() {/*{{{*/
 		$quiz_name=$r[0]['quiz_name'];
 		echo "<orange style='margin-left:20px'>$quiz_name</orange>";
 		echo "<a href=?quiz_results_by_name_max=$_GET[quiz_results_by_name] class=blink>$quiz_name MAX</a> ";
-		echo "<table><thead><th>Id<th>Student<th>Group<th>$i18n_grade<th>$i18n_points<th>Start<th>Comment";
+		echo "<table><thead><th>Id<th>Student<th>$i18n_grade<th>$i18n_points<th>Start<th>$i18n_group<th>Comment";
 		echo "$collect";
 		echo '</table><br><br><br>';
 	} 
-	echo "<br><br><green>CSV for copy paste</green><br><br>";
+	echo "Download: <a class=blink href=?as_xlsx>Excel</a> <a class=blink href=?as_csv>CSV</a><br><br>";
 	foreach($csv as $v) { 
-		echo "$v<br>";
+		echo implode(";", $v)."<br>";
 	}
+	$_SESSION['spreadsheet_data']=$csv;
+	$_SESSION['spreadsheet_name']="${group_name}__${quiz_name}";
 } 
+/*}}}*/
+function spreadsheet() { #{{{
+	$spreadsheet = new Spreadsheet();
+	$sheet = $spreadsheet->getActiveSheet();
+	$sheet->fromArray($_SESSION['spreadsheet_data'], NULL, 'A1');
+	
+	if(isset($_GET['as_xlsx'])) { 
+		$writer = new Xlsx($spreadsheet);
+		header('Content-Type: application/vnd.ms-excel');
+		header('Content-Disposition: attachment;filename="'. $_SESSION['spreadsheet_name'] .'.xls"'); 
+		header('Cache-Control: max-age=0');
+		$writer->save('php://output');
+	} else {
+		header('Content-Type: application/vnd.ms-excel');
+		header('Content-Disposition: attachment;filename="'. $_SESSION['spreadsheet_name'] .'.csv"'); 
+		header('Cache-Control: max-age=0');
+		$csv='';
+		foreach($_SESSION['spreadsheet_data'] as $v) { 
+			$csv.=implode(";", $v)."\n";
+		}
+		file_put_contents('php://output', $csv);
+	}
+	exit();
+}
 /*}}}*/
 function quiz_results_by_name_max() {/*{{{*/
 	extract($_SESSION);
 	quizes_summary();
 
-	$query="SELECT s.last_name, s.first_name, g.group_name, q.quiz_name, max(r.points) as points 
+	$query="SELECT s.last_name, s.first_name, g.group_name, g.id as group_id, q.quiz_name, max(r.points) as points 
 	FROM randomized_quizes r
 	LEFT JOIN students s ON r.student_id=s.id
 	LEFT JOIN groups g ON g.id=s.group_id
 	LEFT JOIN quizes q ON r.quiz_id=q.id
 	WHERE quiz_id=$1 AND s.last_name IS NOT NULL
-	GROUP BY s.last_name, s.first_name, g.group_name, q.quiz_name
+	GROUP BY s.last_name, s.first_name, g.group_name, g.id, q.quiz_name
 	ORDER BY g.group_name desc, s.last_name ASC";
 		
 	$r=$krr->query($query, array($_GET['quiz_results_by_name_max'])); 
@@ -595,15 +627,16 @@ function quiz_results_by_name_max() {/*{{{*/
 	$i=1;
 	foreach($r as $row) {
 		extract($row);
-		$collect.="<tr><td>$i<td>$last_name $first_name<td><green>$group_name</green><td>$points</a>";
-		$csv[]="$group_name;$last_name $first_name;$points";
+		$gname=format_group($group_id);
+		$collect.="<tr><td>$i<td>$last_name $first_name<td>$points<td>$gname";
+		$csv[]="$last_name $first_name;$points;$group_name";
 		$i++;
 	}
 	if(!empty($collect)) { 
 		$quiz_name=$r[0]['quiz_name'];
 		echo "<a style='margin-left:20px' href=?quiz_results_by_name=$_GET[quiz_results_by_name_max] class=blink>$quiz_name</a>";
 		echo "<orange>$quiz_name MAX</orange><br>";
-		echo "<table><thead><th>Id<th>Student<th>Group<th>$i18n_points";
+		echo "<table><thead><th>Id<th>Student<th>$i18n_points<th>$i18n_group";
 		echo "$collect";
 		echo '</table><br><br><br>';
 	} 
@@ -643,14 +676,14 @@ function quizes_results_by_date() {/*{{{*/
 	ORDER BY rq.quiz_instance_id DESC
 	", array($_SESSION['teacher_id']));
 
-	echo "<table><thead><th>Id<th>$i18n_time<th>$i18n_group<th>$i18n_quiz<th>$i18n_teacher<th>$i18n_quizes_results";
+	echo "<table><thead><th>Id<th>$i18n_time<th>$i18n_quiz<th>$i18n_teacher<th>$i18n_group<th>$i18n_quizes_results";
 	$i=1;
 	foreach($r as $row) {
 		extract($row);
 		$quiz_name=mb_substr($quiz_name,0,18, "utf8");
 		$teacher=mb_substr($last_name,0,10, "utf8");
-		$group=format_group($group_id,0);
-		echo "<tr><td>$i<td>$quiz_activation<td>$group<td> <orange>$quiz_name</orange><td>$last_name<td> 
+		$group=format_group($group_id);
+		echo "<tr><td>$i<td>$quiz_activation<td> <orange>$quiz_name</orange><td>$last_name<td>$group<td> 
 		<FORM method=POST action=admin.php?quiz_results_by_date=$quiz_instance_id>
 		<input type=submit value='($count) $i18n_show'>
 		<input type=hidden name=quiz_activation value=$quiz_activation>
@@ -682,10 +715,11 @@ function quiz_results_by_date() {/*{{{*/
 	foreach($r as $row) {
 		extract($row);
 		$started=$krr->extractTime($student_started);
+		$group=format_group($r[0]['group_id']);
 		if(empty($points)) { 
-			$collect.="<tr><td>$i<td>$last_name $first_name<td>-<td>-<td>$started<td><black>$i18n_didnt_complete</black>";
+			$collect.="<tr><td>$i<td>$last_name $first_name<td>-<td>-<td>$started<td>$group<td><black>$i18n_didnt_complete</black>";
 		} else {
-			$collect.="<tr><td>$i<td>$last_name $first_name<td><a href=?debug_student_quiz=$debug_student_quiz class=blink>$grade</a><td>$points<td>$started<td>";
+			$collect.="<tr><td>$i<td>$last_name $first_name<td><a href=?debug_student_quiz=$debug_student_quiz class=blink>$grade</a><td>$points<td>$started<td>$group<td>";
 		}
 		$csv[]="$i;$last_name;$first_name;$grade;$points;$group_name";
 		$i++;
@@ -693,9 +727,8 @@ function quiz_results_by_date() {/*{{{*/
 	if(!empty($collect)) { 
 		$quiz_name=$r[0]['quiz_name'];
 		$date=$krr->extractDate($student_started);
-		$group=format_group($r[0]['group_id']);
-		echo "<br><orange>$quiz_name</orange> $group $date<br><br>";
-		echo "<table><thead><th>Id<th>Student<th>$i18n_grade<th>$i18n_points<th>Start<th>Comment";
+		echo "<br><orange>$quiz_name</orange> $date<br><br>";
+		echo "<table><thead><th>Id<th>Student<th>$i18n_grade<th>$i18n_points<th>Start<th>Group<th>Comment";
 		echo "$collect";
 		echo '</table><br><br><br>';
 		echo "<br><br><green>CSV for copy paste</green><br><br>";
@@ -709,15 +742,11 @@ function quiz_results_by_date() {/*{{{*/
 	
 }
 /*}}}*/
-function format_group($id, $link=1) {/*{{{*/
+function format_group($id) {/*{{{*/
 	$r=$_SESSION['krr']->query("SELECT group_name FROM groups WHERE id=$1", array($id));
 	if(empty($r[0])) { return; } 
 	$name=$r[0]['group_name'];
-	if($link==1) { 
-		return "<a class=blink href=?manage_students=$id>$name</a>";
-	} else {
-		return "<green>$name</green>"; 
-	}
+	return "<a class=nocolor href=?manage_students=$id>$name</a>";
 }
 /*}}}*/
 function do_modify_owners(){/*{{{*/
@@ -779,6 +808,10 @@ function menu(){/*{{{*/
 		  ";
 }/*}}}*/
 function main() {/*{{{*/
+	if(isset($_SESSION['teacher_in'])) {
+		if(isset($_GET['as_xlsx'])) { spreadsheet(); }
+		if(isset($_GET['as_csv']))  { spreadsheet(); }
+	}
 	$_SESSION['krr']->htmlHead();
 	echo "<link type='text/css' rel='stylesheet' href='css/admin.css' />";
 
