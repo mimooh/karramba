@@ -46,6 +46,7 @@
 # init #{{{
 USER=`id -ru`
 [ "X$USER" == "X0" ] && { echo "Don't run as root / sudo"; exit; }
+cd $WWW_DIR
 
 # www-data user needs DB vars. They are kept in www-data environment: /etc/apache2/envvars #{{{
 temp=`mktemp`
@@ -271,9 +272,9 @@ echo;
 echo "Restarting apache..."
 sudo service apache2 restart
 
-sudo chgrp -R www-data "$WWW_DIR/img/"
-sudo chmod -R g+s "$WWW_DIR/img/"
-sudo chmod -R 775 "$WWW_DIR/img/"
+sudo chgrp -R www-data "img/"
+sudo chmod -R g+s "img/"
+sudo chmod -R 775 "img/"
 
 echo "Default student: Snow Jon, password: 1"
 echo "Default teacher: a@com, password: 1"
