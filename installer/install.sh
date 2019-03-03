@@ -81,9 +81,6 @@ CREATE USER $KARRAMBA_DB_USER WITH PASSWORD '$KARRAMBA_DB_PASS';
 CREATE TABLE teachers (id SERIAL PRIMARY KEY, first_name text, last_name text, email text, password text);
 CREATE TABLE students (id SERIAL PRIMARY KEY, first_name text, last_name text, index int, group_id int, password text);
 CREATE TABLE groups (id SERIAL PRIMARY KEY, group_name text);
-CREATE TABLE used_questions(id SERIAL PRIMARY KEY, quiz_id int, question_id int);
-ALTER TABLE used_questions ADD CONSTRAINT u_q FOREIGN KEY (question_id) REFERENCES questions(id) ON DELETE RESTRICT; 
-ALTER TABLE used_questions ADD UNIQUE (quiz_id, question_id);
 
 INSERT INTO teachers (first_name , last_name , email , password) VALUES ('Jaimie' , 'Lannister' , 'a@com' , '1');
 INSERT INTO teachers (first_name , last_name , email , password) VALUES ('Tyrion' , 'Lannister' , 'b@com' , '1');
@@ -219,6 +216,10 @@ CREATE OR REPLACE VIEW r AS
 	randomized_quizes.quiz_id = quizes.id AND
 	randomized_quizes.teacher_id = teachers.id
 ;
+
+CREATE TABLE used_questions(id SERIAL PRIMARY KEY, quiz_id int, question_id int);
+ALTER TABLE used_questions ADD CONSTRAINT u_q FOREIGN KEY (question_id) REFERENCES questions(id) ON DELETE RESTRICT; 
+ALTER TABLE used_questions ADD UNIQUE (quiz_id, question_id);
 
 -- Karramba depends on this Karramba Example test; do not remove!
 INSERT INTO quizes(quiz_name , how_many , timeout) VALUES('ExampleQuiz' , 10 , 10);
