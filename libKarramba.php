@@ -269,7 +269,6 @@ class karramba {/*{{{*/
 		}
 		foreach($t as $threshold=>$grade) {
 			if(!preg_match("/\d\.\d/", $grade) or !preg_match("/\d*/", $threshold)) { 
-				dd(array("The final format should be: [x] => x.x",$t));
 				$_SESSION['krr']->fatal($_SESSION['i18n_fatal_grades_thresholds']); 
 			}
 		}

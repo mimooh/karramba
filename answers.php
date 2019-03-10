@@ -116,7 +116,6 @@ function results(){/*{{{*/
 			echo "$details";
 			$_SESSION['krr']->query("DELETE FROM randomized_quizes WHERE id=$1", array($_POST['randomized_id']));
 		} else {
-
 			animation_on_quiz_complete($points);
 			$grade=points2grade($points);
 			$_SESSION['krr']->query("UPDATE randomized_quizes SET student_answers_vector=$1, points=$2, grade=$3, student_finished=now() WHERE id=$4", array(join(",",$student_answers), $points, $grade, $_POST['randomized_id']));

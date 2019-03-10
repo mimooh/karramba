@@ -489,23 +489,51 @@ function quiz_update() {/*{{{*/
 
 	if(!isset($err)) {
 		$krr->query("UPDATE questions SET deleted = TRUE WHERE quiz_id=$1", array($_GET['quiz_configure']));
-		remove_unused_questions();
-		foreach($collect as $v) {
-			array_unshift($v, $_GET['quiz_configure']);
-			$krr->query("INSERT INTO questions(quiz_id , question , answer0 , answer1 , answer2 , correct_vector) VALUES($1, $2, $3, $4, $5, $6)", $v, 1);
-		}
+		remove_unused_questions(); 
+		prevent_duplicate_questions($collect);
 		$krr->query("UPDATE quizes SET how_many=$1, timeout=$2, grades_thresholds=$3, sections=$4 WHERE id=$5", array($_POST['how_many'], $_POST['timeout'], $_POST['grades_thresholds'], $_POST['sections'], $_GET['quiz_configure']));
 		unset($_SESSION['textarea_save']);
 	}
 	validate_quiz_configuration();
 }
 /*}}}*/
-function remove_unused_questions() { #{{{
-	#psql karramba -c "CREATE TABLE used_questions(id SERIAL PRIMARY KEY, quiz_id INT, question_id INT)";
-	#psql karramba -c "select * from used_questions order by question_id"
-	#psql karramba -c "select * from questions"
-	#psql karramba -c "select * from quizes order by id desc"
+function prevent_duplicate_questions($collect) { #{{{
+	# psql karramba -c "select * from questions where quiz_id=3"
+	# psql karramba -c "select * from randomized_quizes"
+	// Say Professor has 1000 questions and he changes a single character in Quiz Config
+	// Normally we would mark 1000 questions as deleted (history needs them) and add another 1000 questions.
+	// Instead we iterate and if the new question matches a record in DB, then we un-delete the old one and don't create a new one.
+	// Only if there is a brand new record in $_POST questions we are inserting.
 
+	$krr=$_SESSION['krr'];
+	$r=$krr->query("SELECT id, question || answer0 || answer1 || answer2 || correct_vector AS record FROM questions WHERE quiz_id=$1", array($_GET['quiz_configure']));
+	$existing=[];
+	foreach($r as $v) {
+		$existing[$v['id']]=$v['record'];
+	}
+
+	$unmark_delete=[];
+	foreach($collect as $k=>$v) { 
+		$search=implode("", $v); 
+		$key=array_search($search, $existing);
+		if($key) { 
+			$unmark_delete[]=$key;
+			unset($collect[$k]);
+		}
+	}
+	$krr->query("UPDATE questions SET deleted = FALSE WHERE id=ANY($1)", array("{".implode(",", $unmark_delete)."}"));
+	foreach($collect as $v) {
+		array_unshift($v, $_GET['quiz_configure']);
+		$_SESSION['krr']->query("INSERT INTO questions(quiz_id , question , answer0 , answer1 , answer2 , correct_vector) VALUES($1, $2, $3, $4, $5, $6)", $v, 1);
+	}
+}
+/*}}}*/
+function remove_unused_questions() { #{{{
+	// At this points we have deleted=True for all questions. 
+	// Professor just marked 1000 questions as deleted and we will be soon processing $_POST questions.
+	// On occassion that professor provides only 800 $_POST questions (200 are obsolete) we are hunting for 
+	// the questions that are not need for history and we are removing them. 
+	#psql karramba -c "SELECT * FROM used_questions"
 	$_SESSION['krr']->query("DELETE FROM questions WHERE quiz_id=$1 AND id NOT IN (SELECT question_id FROM used_questions WHERE quiz_id=$1)", array($_GET['quiz_configure']));
 }
 /*}}}*/
