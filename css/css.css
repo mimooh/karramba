@@ -39,9 +39,6 @@ img {
 	margin-left: auto;
 	margin-right: auto;
 	padding: 10px;
-	margin-top: 20px;
-	margin-bottom: 20px;
-	background-color: #fff;
 }
 
 navigation{
@@ -52,8 +49,8 @@ navigation{
 	max-width: 800px;
 	display:block;
 	text-align: center;
-	background: #89b;
 	width: 100%;
+	border-bottom: 1px solid #fff;
 }
 
 prev{
@@ -61,7 +58,6 @@ prev{
 	-webkit-user-select: none; 
 	user-select:none;
 	padding: 10px 15px 10px 15px;
-	background: #136;
 	float:left;
 	color: #fff;
 	cursor: pointer;
@@ -73,7 +69,6 @@ next{
 	user-select:none;
 	padding: 10px 15px 10px 15px;
 	padding-right: 15px;
-	background:#136;
 	float:right;
 	color: #fff;
 	cursor: pointer;
@@ -88,12 +83,10 @@ next{
 
 prev:hover, next:hover {
 	cursor: pointer;
-	background: #800;
 }
 
 top-middle {
 	color: #fff;
-	background:#136;
 	padding: 10px 5px 10px 5px;
 	text-align: center;
 	display:inline-block;
@@ -161,9 +154,9 @@ msg, fatal, cannot {
 	z-index: 999;
 	position:fixed;
 	opacity: 0.9;
-	left:80px;
+	left:0px;
 	min-height: 30px;
-	top:80px;
+	top:10px;
     text-align:center;
     width:500px;
     background-color: #063;

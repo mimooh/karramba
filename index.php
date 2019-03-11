@@ -18,15 +18,15 @@ function login_form(){/*{{{*/
 	<center>
 
 	$i18n_last_name<br>
-	<input type=text  id='inputStudentLogin' size=40 placeholder='$i18n_first_two_letters ...'> 
+	<input type=text  id='inputStudentLogin' size=20 placeholder='$i18n_first_two_letters ...'> 
 	<br><br>
 	$i18n_password <br>    
 
-	<input size=40 type=$type name='password' autocomplete='off'> 
+	<input size=20 type=$type name='password' autocomplete='off'> 
 	<input type=hidden id='inputHiddenStudentId' name=studentIdFromLogin> <br><br>
-	<input type=submit name=logMeIn value=$i18n_submit><br><br>
+	<input type=submit name=logMeIn value=$i18n_submit><br>
 	<br><br>
-	<img src=img/karramba.png><br>
+	<img style='margin:0px; background:none' src=img/karramba.png><br>
 	</form>
 	<a class=blink style='font-size:11px' href=".getenv("KARRAMBA_NEW_STUDENT_FORM_URL").">New student</a>
 	<a class=rlink style='font-size:11px' href=admin.php>admin</a>
@@ -81,13 +81,13 @@ function choose_quiz() {/*{{{*/
 	if(!empty($hanging[0])) {
 		extract($hanging[0]);
 		$_SESSION['krr']->cannot($_SESSION['i18n_need_to_complete']);
-		echo "<br><FORM><input type=hidden name=randomized_id value='$randomized_id'><input type=hidden name=quiz_instance_id value='$quiz_instance_id'>PIN: <input type=text name=pin size=3> <input type=submit value='$group_name / $quiz_name'></FORM>";
+		echo "<br><FORM><input type=hidden name=randomized_id value='$randomized_id'><input type=hidden name=quiz_instance_id value='$quiz_instance_id'>PIN: <input type=number name=pin style='width:60px'> <input type=submit value='$group_name / $quiz_name'></FORM>";
 	}  else {
-		echo "<FORM><input type=hidden name=quiz_instance_id value=1>PIN: <input type=text name=pin value=1111 size=3> <input type=submit value=ExampleQuiz></FORM>";
+		echo "<FORM><input type=hidden name=quiz_instance_id value=1>PIN: <input type=number name=pin value=1111 style='width:60px'> <input type=submit value=ExampleQuiz></FORM>";
 		foreach($_SESSION['krr']->query("SELECT id FROM quizes_instances WHERE group_id=$1 AND quiz_deactivation IS NOT NULL AND quiz_deactivation > now()", array($_SESSION['group_id'])) as $r) { 
 			$group_name=$_SESSION['krr']->query("SELECT t.group_name FROM groups t, quizes_instances q WHERE t.id=q.group_id AND q.id=$1", array($r['id']))[0]['group_name'];
 			$quiz_name=$_SESSION['krr']->query("SELECT t.quiz_name FROM quizes t, quizes_instances q WHERE t.id=q.quiz_id AND q.id=$1", array($r['id']))[0]['quiz_name'];
-			echo "<br><FORM><input type=hidden name=quiz_instance_id value=".$r['id'].">PIN: <input type=text name=pin  size=3> <input type=submit value='$group_name / $quiz_name'></FORM>";
+			echo "<br><FORM><input type=hidden name=quiz_instance_id value=".$r['id'].">PIN: <input type=number name=pin style='width:60px'> <input type=submit value='$group_name / $quiz_name'></FORM>";
 		}
 	}
 }
