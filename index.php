@@ -13,17 +13,17 @@ function login_form(){/*{{{*/
 	}
 
 	echo "
-	<form method=POST id=karramba-login-form>
+	<form method=POST>
 	<br>
 	<center>
 	<div style='font-size: 14px'>
 
 	$i18n_last_name<br>
-	<input style='font-size:14px' type=text name=student_login id='inputStudentLogin' size=36 placeholder='$i18n_first_two_letters ...'> 
+	<input style='font-size:14px' type=text name=student_login id='inputStudentLogin' size=32 placeholder='$i18n_first_two_letters ...'> 
 	<br><br>
 	$i18n_password <br>    
 
-	<input style='font-size:14px' size=36 type=$type name='password' autocomplete='off'> 
+	<input style='font-size:14px' size=32 type=$type name='password' autocomplete='off'> 
 	<input type=hidden id='inputHiddenStudentId' name=studentIdFromLogin> <br><br>
 	<input style='font-size:14px' type=submit name=logMeIn value=$i18n_submit><br>
 	<br><br>
