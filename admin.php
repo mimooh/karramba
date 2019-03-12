@@ -822,14 +822,15 @@ function manage_owners() {/*{{{*/
 function menu(){/*{{{*/
 	extract($_SESSION);
 	$debug_menu='';
+
 	echo "<teacher_menu> 
-		  <a href=?quizes_configure class=rlink>✎</a>
-		  <a href=?run_quizes class=rlink>⚙</a>
-		  <a href=?quizes_results_by_date class=rlink>$i18n_quizes_results</a>
-		  <a href=?students_list class=rlink>Students</a>
+		  <a title='$i18n_run_quizes' href=?run_quizes class=rlink><i class='fas fa-cog fa-1x'></i></a>
+		  <a title='$i18n_quizes_results' href=?quizes_results_by_date class=rlink><i class='fas fa-trophy fa-1x'></i></a>
+		  <a title='Students' href=?students_list class=rlink><i class='fas fa-user-cog fa-1x'></i></a>
+		  <a title='$i18n_configure' href=?quizes_configure class=rlink><i class='fas fa-tools fa-1x'></i></a>
 		  <div style='float:right; margin-right:10px'>
 		  $debug_menu
-		  <a href=?q class=rlink>$i18n_logout</a>
+		  <a title='$i18n_logout' href=?q class=rlink><i class='fas fa-sign-out-alt fa-1x'></i></a>
 		  </div>
 		  </teacher_menu>
 		  ";

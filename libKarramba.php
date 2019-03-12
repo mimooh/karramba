@@ -91,8 +91,10 @@ class karramba {/*{{{*/
 			<script src='js/jquery-3.1.1.min.js'></script>
 			<script src='js/jquery-ui.min.js'></script>
 			<script src='js/00karramba.js'></script>
+			<link rel='stylesheet' href='https://use.fontawesome.com/releases/v5.7.2/css/all.css' integrity='sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr' crossorigin='anonymous'>
 		</head>
-		<body>";
+		<body>
+		";
     }
 /*}}}*/
 	public function debugKarramba() { /*{{{*/
