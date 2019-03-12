@@ -103,14 +103,15 @@ function quizes_configure(){/*{{{*/
 			<td> $remove_button
 			";
 		}
+		echo "</table>";
 		echo "
-		<FORM METHOD=POST> 
-		<tr><td><input type=text size=14 name=quiz_name_add placeholder='$i18n_quiz_name'>	
+		<FORM METHOD=POST style='float:right'> 
+		<br><br>
+		<input type=text size=14 name=quiz_name_add placeholder='$i18n_quiz_name'>
 		<input type=submit name=quiz_add value=$i18n_add>
 		</FORM>
 		";
 	}
-	echo "</table>";
 }/*}}}*/
 function isChecked($val) {/*{{{*/
 	if($val==1) { return 'div-yes'; }
@@ -155,7 +156,7 @@ function run_quizes(){/*{{{*/
 	echo "<div id='choose_groups_button' class='blink'>$i18n_select_quiz</div><br><br>"; 
 	$r=$krr->query("SELECT i.*, q.quiz_name FROM quizes_instances i, quizes q WHERE q.id=i.quiz_id AND i.teacher_id=$1 AND i.quiz_deactivation IS NOT NULL ORDER BY i.quiz_deactivation DESC" , array($_SESSION['teacher_id']));
 	if(!empty($r)) { 
-		echo "<table id=running_quizes><thead><th>$i18n_quiz<th><help title='$i18n_help_pin'>PIN</help><th>$i18n_groups<th>$i18n_operation<th><help title='$i18n_help_active_until'>$i18n_quiz_active_until</help>";
+		echo "<table id=running_quizes><thead><th>$i18n_quiz<th><help title='$i18n_help_pin'>PIN</help><th>$i18n_groups<th><help title='$i18n_help_active_until'>$i18n_quiz_active_until</help>";
 		echo "<tbody>";
 		foreach($r as $q){
 			extract($q);
@@ -163,7 +164,7 @@ function run_quizes(){/*{{{*/
 			$operation="<FORM method=POST><input type=submit value='$i18n_deactivate_quiz'><input type=hidden name=stop_quiz value=$id></FORM>";
 			$status="$deactivation_time"; 
 			$group=format_group($group_id);
-			echo "<tr><td>$quiz_name<td><green>$pin</green><td>$group<td>$operation<td>$status";
+			echo "<tr><td>$quiz_name<td><green>$pin</green><td>$group<br>$operation<td>$status";
 		}
 		echo "</tbody></table>";
 	}
