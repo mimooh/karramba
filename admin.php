@@ -822,8 +822,8 @@ function menu(){/*{{{*/
 	extract($_SESSION);
 	$debug_menu='';
 	echo "<teacher_menu> 
-		  <a href=?quizes_configure class=rlink>$i18n_quizes_configure</a>
-		  <a href=?run_quizes class=rlink>$i18n_run_quizes</a>
+		  <a href=?quizes_configure class=rlink>✎</a>
+		  <a href=?run_quizes class=rlink>⚙</a>
 		  <a href=?quizes_results_by_date class=rlink>$i18n_quizes_results</a>
 		  <a href=?students_list class=rlink>Students</a>
 		  <div style='float:right; margin-right:10px'>

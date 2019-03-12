@@ -18,7 +18,7 @@ function login_form(){/*{{{*/
 	<center>
 
 	$i18n_last_name<br>
-	<input type=text  id='inputStudentLogin' size=20 placeholder='$i18n_first_two_letters ...'> 
+	<input type=text  name=student_login id='inputStudentLogin' size=20 placeholder='$i18n_first_two_letters ...'> 
 	<br><br>
 	$i18n_password <br>    
 
@@ -34,14 +34,31 @@ function login_form(){/*{{{*/
 	"; 
 
 }/*}}}*/
+function get_student_id() {
+	// First we try jquery-ui:
+	if(!empty($_POST['studentIdFromLogin'])) { 
+		return $_POST['studentIdFromLogin'];
+	}
+	// Google Chrome likes to put their autofill on top of jquery.
+	// Then we parse id=857 out of the input field
+	// [student_login] => Testowy Test [0.GR.TESTOWA] |857
+	if(!empty($_POST['student_login'])) { 
+		$arr=explode("|", $_POST['student_login']);
+		if(!empty($arr[1])) { 
+			return $arr[1];
+		}
+	}
+	return NULL;
+}
 function do_login(){/*{{{*/
 	// Student can login with a pass or an index
 	extract($_SESSION);
 
-	if(empty($_POST['studentIdFromLogin'])) { $krr->msg($i18n_bad_login); return; }
-	if(empty($_POST['password']))           { $krr->msg($i18n_bad_login); return; }
+	$student_id=get_student_id();
+	if(empty($student_id))        { $krr->msg($i18n_bad_login); return; }
+	if(empty($_POST['password'])) { $krr->msg($i18n_bad_login); return; }
 
-	$row=$krr->query("SELECT id as student_id, group_id, last_name, first_name, password, index FROM students WHERE id=$1", array($_POST['studentIdFromLogin']));
+	$row=$krr->query("SELECT id as student_id, group_id, last_name, first_name, password, index FROM students WHERE id=$1", array($student_id));
 
 	if(isset($row) && ($row[0]['password']==$_POST['password'] || $row[0]['index']==$_POST['password'])) {
 		$_SESSION+=$row[0];

@@ -192,6 +192,7 @@ $(function()  {
 		autoFocus: true,
 		minLength: 2,      	
 		select: function( event, ui ) {
+			console.log("id", ui.item.data);
 			$("#inputHiddenStudentId").val(ui.item.data);
 			//$("#idDebug").text(ui.item.data);
 		}
