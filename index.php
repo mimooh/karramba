@@ -13,28 +13,30 @@ function login_form(){/*{{{*/
 	}
 
 	echo "
-	<form method=POST>
+	<form method=POST id=karramba-login-form>
 	<br>
 	<center>
+	<div style='font-size: 14px'>
 
 	$i18n_last_name<br>
-	<input type=text  name=student_login id='inputStudentLogin' size=20 placeholder='$i18n_first_two_letters ...'> 
+	<input style='font-size:14px' type=text name=student_login id='inputStudentLogin' size=36 placeholder='$i18n_first_two_letters ...'> 
 	<br><br>
 	$i18n_password <br>    
 
-	<input size=20 type=$type name='password' autocomplete='off'> 
+	<input style='font-size:14px' size=36 type=$type name='password' autocomplete='off'> 
 	<input type=hidden id='inputHiddenStudentId' name=studentIdFromLogin> <br><br>
-	<input type=submit name=logMeIn value=$i18n_submit><br>
+	<input style='font-size:14px' type=submit name=logMeIn value=$i18n_submit><br>
 	<br><br>
 	<img style='margin:0px; background:none' src=img/karramba.png><br>
 	</form>
 	<a class=blink style='font-size:11px' href=".getenv("KARRAMBA_NEW_STUDENT_FORM_URL").">New student</a>
 	<a class=rlink style='font-size:11px' href=admin.php>admin</a>
+	</div>
 	</center>
 	"; 
 
 }/*}}}*/
-function get_student_id() {
+function get_student_id() {# {{{
 	// First we try jquery-ui:
 	if(!empty($_POST['studentIdFromLogin'])) { 
 		return $_POST['studentIdFromLogin'];
@@ -50,6 +52,7 @@ function get_student_id() {
 	}
 	return NULL;
 }
+/*}}}*/
 function do_login(){/*{{{*/
 	// Student can login with a pass or an index
 	extract($_SESSION);
