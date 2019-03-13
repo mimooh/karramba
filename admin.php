@@ -107,7 +107,7 @@ function quizes_configure(){/*{{{*/
 		echo "
 		<FORM METHOD=POST style='float:right'> 
 		<br><br>
-		<input type=text size=14 name=quiz_name_add placeholder='$i18n_quiz_name'>
+		<input type=text size=24 name=quiz_name_add placeholder='$i18n_quiz_name'>
 		<input type=submit name=quiz_add value=$i18n_add>
 		</FORM>
 		";
