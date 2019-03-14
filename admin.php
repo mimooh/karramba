@@ -45,7 +45,7 @@ function teacher_do_login(){/*{{{*/
 	}
 	$row=$krr->query("SELECT id as teacher_id, last_name, first_name, password FROM teachers WHERE email=$1", array($_POST['teacher_email']));
 
-	if(isset($row) && $row[0]['password']==$_POST['password']) {
+	if(isset($row[0]) && $row[0]['password']==$_POST['password']) {
 		unset($row[0]['password']);
 		$_SESSION+=$row[0];
 		$_SESSION['teacher_in']=1;
@@ -790,7 +790,40 @@ function do_modify_owners(){/*{{{*/
 	foreach($teachers_ids as $teacher_id) { 
 		$krr->query("INSERT INTO quizes_owners(quiz_id,teacher_id) VALUES($1,$2)", array($_GET['quiz_configure'], $teacher_id));
 	}
+	owners_images($teachers_ids);
 }/*}}}*/
+function owners_images($teachers_ids) { #{{{
+	// The images for shared quizes are links to the master. We need to find the master first.
+	if(!is_numeric($_GET['quiz_configure'])) { 
+		die("err53: quiz_configure not numeric");
+	}
+	foreach($teachers_ids as $k=>$v) {
+		if(!is_numeric($v)) { 
+			die("err54: $v should be numeric");
+		}
+		if (file_exists("img/$v/$_GET[quiz_configure]") && !is_link("img/$v/$_GET[quiz_configure]")) { 
+			$master="img/$v/$_GET[quiz_configure]"; 
+			unset($teachers_ids[$k]); 
+			break; 
+		}
+	}
+
+	// Delete and create symlinks to the master
+	if(empty($master)) { return; }
+	foreach($teachers_ids as $v) {
+		if(!is_numeric($v)) { 
+			die("err55: $v should be numeric");
+		}
+		if(!is_dir("img/$v")) {
+			mkdir("img/$v");
+		}
+		if(is_link("img/$v/$_GET[quiz_configure]")) {
+			system("rm -rf 'img/$v/$_GET[quiz_configure]'");
+		}
+		symlink("../../$master", "img/$v/$_GET[quiz_configure]");
+	}
+}
+/*}}}*/
 function manage_owners() {/*{{{*/
 	// There may be 3 teachers in one departament and they all use the same quiz for their students.
 	echo "<sliding_div id=owners_list>";
