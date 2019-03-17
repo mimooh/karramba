@@ -469,6 +469,8 @@ function htmlspecialchars_minus_img_src($item) {/*{{{*/
 
 	$preserve=array(
 		'<br><img src=',
+		'<h1>',
+		'<h2>',
 		'<sup>',
 		'<sub>',
 	);
