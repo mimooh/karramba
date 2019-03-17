@@ -455,16 +455,31 @@ function validate_quiz_configuration() {/*{{{*/
 }
 /*}}}*/
 function htmlspecialchars_minus_img_src($item) {/*{{{*/
+	// Any php or <? injections we transform via htmlspecialchars()
+	//
 	// karramba transforms 
 	//		|| img.png 
 	// into 
 	//		<br><img src=img.png>
-	// We won't them to be html and don't break with &lt; codes
-	if(preg_match("/\<br\><img src=/", $item)) { 
-		return $item;
-	} else {
-		return htmlspecialchars($item);
-	}
+	// Besides we may allow for some html formatting like sup
+
+
+	if(stripos($item,'php') !== false) { return htmlspecialchars($item); }
+	if(stripos($item,'<?') !== false)  { return htmlspecialchars($item); }
+
+	$preserve=array(
+		'<br><img src=',
+		'<sup>',
+		'<sub>',
+	);
+	
+    foreach($preserve as $pp) {
+        if(stripos($item,$pp) !== false) { 
+			return $item;
+		}
+    }
+
+	return htmlspecialchars($item);
 }
 /*}}}*/
 function quiz_update() {/*{{{*/
