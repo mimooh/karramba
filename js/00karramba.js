@@ -102,12 +102,7 @@ $(function()  {
 		$("q_howto").slideUp(500);
 	});
 //}}}
-	$("body").on("dblclick", "dropzone_form", function() {//{{{
-		$("dropzone_form").slideUp(500);
-		$("q_howto").slideUp(500);
-	});
-//}}}
-	$("body").on("dblclick", "q_howto", function() {//{{{
+	$("body").on("click", "#close_dropzone", function() {//{{{
 		$("dropzone_form").slideUp(500);
 		$("q_howto").slideUp(500);
 	});

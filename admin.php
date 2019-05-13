@@ -272,16 +272,42 @@ function expire_old_quizes(){/*{{{*/
 function upload_images_form() {/*{{{*/
 	if(! is_writable("img/")) { 
 		echo "<dropzone_form class=invisible>";
+		echo "<img id=close_dropzone src=css/close.svg style='float:right'><br>";
 		echo "<br><br>".$_SESSION['i18n_img_not_writable'];
 		echo "</dropzone_form>";
 	} else {
 		echo "<dropzone_form class=invisible>";
+		echo "<img id=close_dropzone src=css/close.svg style='float:right'><br>";
 		echo $_SESSION['i18n_howto_upload_images'];
 		echo "<br><br><link rel='stylesheet' href='css/dropzone.css'>";
 		echo "<script src='js/dropzone.js'></script>";
 		echo "<FORM ACTION=uploadViaDropzone.php?id=".$_GET['quiz_configure']." class='dropzone'></FORM>";
 		echo "</dropzone_form>";
 	}
+}
+/*}}}*/
+
+function pipes2imgs($record) { #{{{
+	$dest="img/".$_SESSION['teacher_id']."/".$_GET['quiz_configure'];
+	foreach($record as $k => $v) {
+		$z=explode("||", $v);
+		if(count($z)>1) { 
+			$img="<img src=$dest/".trim($z[1]).">";
+			$record[$k]=trim($z[0])."<br>$img";
+		}
+	}
+	return $record;
+}
+/*}}}*/
+function imgs2pipes($record) { #{{{
+	foreach($record as $k => $v) {
+		$z=explode("<br><img src=", $v);
+		if(count($z)>1) { 
+			$img=basename(substr($z[1], 0, -1)); // z[1]="/some/path/1.jpg>"
+			$record[$k]=$z[0]." || ".$img; 
+		}
+	}
+	return $record;
 }
 /*}}}*/
 function quiz_configure(){/*{{{*/
@@ -294,26 +320,22 @@ function quiz_configure(){/*{{{*/
 
 	extract($_SESSION);
 	if (explode("?", $_SERVER['HTTP_REFERER'])[1] != $_SERVER['QUERY_STRING']) { unset($_SESSION['textarea_save']); }
-	$r=$krr->query("SELECT * FROM questions WHERE quiz_id=$1 AND deleted = FALSE ORDER BY id" , array($_GET['quiz_configure']));
+	$r=$krr->query("SELECT question,answer0,answer1,answer2,correct_vector  FROM questions WHERE quiz_id=$1 AND deleted = FALSE ORDER BY id" , array($_GET['quiz_configure']));
 	if(empty($r)) { $r=array(); } 
 	if(!isset($_SESSION['textarea_save'])) { 
 		$textarea='';
-		foreach($r as $q) {
-			extract($q);
-			$z=explode("<br><img src=", $question);
-			if(count($z)>1) { 
-				$img=basename(substr($z[1], 0, -1)); // z[1]="/some/path/1.jpg>"
-				$question=$z[0]." || ".$img; 
-			}
-			$textarea.=join("\n", array($question ,$answer0 ,$answer1 ,$answer2 , $correct_vector,"\n"));
+		foreach($r as $record) {
+			$record=imgs2pipes($record);
+			$textarea.=implode("\n", $record)."\n\n";
 		}
 	} else {
 		$textarea=$_SESSION['textarea_save'];
 	}
 	$preview='';
-	foreach($r as $q) {
-		extract($q);
-		$preview.="<tr><th>".join("<tr><td>", array($question ,$answer0 ,$answer1 ,$answer2 , "<green>$correct_vector</green>", "<div style='height:80px'></div>"));
+	foreach($r as $record) {
+		$record['correct_vector']="<green>$record[correct_vector]</green>";
+		$record[]="<div style='height:80px'></div>";
+		$preview.="<tr><th>".join("<tr><td>", $record);
 	}
 	display_configured_quiz($textarea);
 	display_configured_quiz_preview($preview);
@@ -380,7 +402,9 @@ function display_configured_quiz($textarea) { /*{{{*/
 				<tr><td><div id='choose_owners_button' class='blink'>$i18n_share_quiz</div><br>$current_owners
 				</table>
 			</FORM><br>
-			<q_howto class=invisible>$i18n_howto_first_time<br><br><br>$i18n_howto_modify_questions</q_howto>
+			<q_howto class=invisible>
+			<img id=close_dropzone src=css/close.svg style='float:right'><br>
+			$i18n_howto_first_time<br><br><br>$i18n_howto_modify_questions</q_howto>
 		";
 	}
 	echo "$display";
@@ -490,16 +514,11 @@ function quiz_update() {/*{{{*/
 	extract($_SESSION);
 	$_SESSION['krr']->process_grades_thresholds($_POST['grades_thresholds']);
 	$textarea=$_SESSION['textarea_save']=rtrim($_POST['questions_textarea']);
-	$dest="img/".$_SESSION['teacher_id']."/".$_GET['quiz_configure'];
 	$collect=[];
 	$arr=array_chunk(explode("\n", $textarea),6);
 	foreach($arr as $q_id=>$q) { 
 		$q=array_map('trim', $q);
-		if(preg_match('/\|\|/', $q[0])) {
-			$z=explode("||", $q['0']);
-			$img="<img src=$dest/".trim($z[1]).">";
-			$q[0]=trim($z[0])."<br>$img";
-		}
+		$q=pipes2imgs($q);
 		if(validate_quiz_question($q,$q_id) == 'err') { $err=1; break; }
 		$collect[]=array_map('htmlspecialchars_minus_img_src', array($q[0], $q[1], $q[2], $q[3], $q[4]));
 	}
