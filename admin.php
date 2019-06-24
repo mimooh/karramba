@@ -80,9 +80,7 @@ function quizes_configure(){/*{{{*/
 		array($_SESSION['teacher_id'])
 	);
 	// Hard to make in a single query: separate query collect all new quizes, which have no questions yet
-	$newq=$krr->query("SELECT * FROM quizes WHERE grades_thresholds IS NULL AND id IN (SELECT quiz_id FROM quizes_owners WHERE teacher_id=$1)",
-		array($_SESSION['teacher_id'])
-	);
+	$newq=$krr->query("SELECT qq.* FROM quizes_owners qo LEFT JOIN quizes qq ON qq.id=qo.quiz_id WHERE qo.teacher_id=$1 and qo.quiz_id not in (select quiz_id from questions)", array($_SESSION['teacher_id']));
 	foreach($newq as $nn) { 
 		$nn['count']='new';
 		$r[]=$nn;
