@@ -155,7 +155,7 @@ function is_student_allowed() {/*{{{*/
 		}
 	} else {
 		if($_REQUEST['pin']!='1111') {
-			$krr->fatal($_SESSION['$i18n_wrong_pin']);
+			$krr->fatal($_SESSION['i18n_wrong_pin']);
 		}
 	}
 
