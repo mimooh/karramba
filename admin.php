@@ -624,8 +624,8 @@ function quiz_results_by_name() {/*{{{*/
 		} else {
 			$collect.="<tr><td>$i<td>$last_name $first_name<td><a href=?debug_student_quiz=$debug_student_quiz class=blink>$grade</a><td>$points<td>$started<td>$gname<td>";
 		}
-		$csv[]=array("$last_name $first_name", "$grade" , "$points", "$group_name");
 		$i++;
+		$csv[]=array("$last_name $first_name", "$grade" , "$points", "$group_name");
 	}
 
 	if(!empty($collect)) { 
@@ -637,25 +637,56 @@ function quiz_results_by_name() {/*{{{*/
 		echo '</table><br><br><br>';
 	} 
 	echo "Download: <a class=blink href=?as_xlsx>Excel</a> <a class=blink href=?as_csv>CSV</a><br><br>";
-	foreach($csv as $v) { 
-		echo implode(";", $v)."<br>";
-	}
 	$_SESSION['spreadsheet_data']=$csv;
 	$_SESSION['spreadsheet_name']="${group_name}__${quiz_name}";
 } 
 /*}}}*/
+function xls_formulas() {
+	// * Since grades are frozen in database for historic reasons, the teacher is free
+	// to use xls formulas to recalculate grades with lookup()
+	// * Points must be the third column
+	// * If there are too few records in xls then the array wraps badly, therefore this function
+	// is only useful for > 7 rows.
+
+	$with_formulas=[];
+	if(count($_SESSION['spreadsheet_data']) < 7) { return; }
+	foreach($_SESSION['spreadsheet_data'] as $k=>$record) {
+		$record[]='';
+		$record[]='';
+		$record[]='';
+		$record[]="=LOOKUP(C".($k+1).",K3:K8,L3:L8)";
+		$record[]='';
+		$record[]='';
+		$with_formulas[]=$record;
+	}
+	$with_formulas[0][7]='Recalculate?';
+	$with_formulas[0][10]='H column recalculates according to the below criteria:';
+	$with_formulas[1][10]='from pts';
+	$with_formulas[1][11]='grade';
+
+	$with_formulas[2][10]='0' ; $with_formulas[2][11]=2.0 ;
+	$with_formulas[3][10]=10  ; $with_formulas[3][11]=3.0 ;
+	$with_formulas[4][10]=12  ; $with_formulas[4][11]=3.5 ;
+	$with_formulas[5][10]=14  ; $with_formulas[5][11]=4.0 ;
+	$with_formulas[6][10]=16  ; $with_formulas[6][11]=4.5 ;
+	$with_formulas[7][10]=18  ; $with_formulas[7][11]=5.0 ;
+
+	$_SESSION['spreadsheet_data']=$with_formulas ;
+}
 function spreadsheet() { #{{{
 	$spreadsheet = new Spreadsheet();
 	$sheet = $spreadsheet->getActiveSheet();
-	$sheet->fromArray($_SESSION['spreadsheet_data'], NULL, 'A1');
 	
 	if(isset($_GET['as_xlsx'])) { 
+		xls_formulas();
+		$sheet->fromArray($_SESSION['spreadsheet_data'], NULL, 'A1');
 		$writer = new Xlsx($spreadsheet);
 		header('Content-Type: application/vnd.ms-excel');
 		header('Content-Disposition: attachment;filename="'. $_SESSION['spreadsheet_name'] .'.xls"'); 
 		header('Cache-Control: max-age=0');
 		$writer->save('php://output');
 	} else {
+		$sheet->fromArray($_SESSION['spreadsheet_data'], NULL, 'A1');
 		header('Content-Type: application/vnd.ms-excel');
 		header('Content-Disposition: attachment;filename="'. $_SESSION['spreadsheet_name'] .'.csv"'); 
 		header('Cache-Control: max-age=0');
@@ -686,12 +717,13 @@ function quiz_results_by_name_max() {/*{{{*/
 		
 	$collect='';
 	$csv=[];
+	$csv[]=array("$i18n_last_name $i18n_first_name", "", "$i18n_points", "$i18n_group");
 	$i=1;
 	foreach($r as $row) {
 		extract($row);
 		$gname=format_group($group_id);
 		$collect.="<tr><td>$i<td>$last_name $first_name<td>$points<td>$gname";
-		$csv[]="$last_name $first_name;$points;$group_name";
+		$csv[]=array("$last_name $first_name", "", "$points" , "$group_name");
 		$i++;
 	}
 	if(!empty($collect)) { 
@@ -702,10 +734,9 @@ function quiz_results_by_name_max() {/*{{{*/
 		echo "$collect";
 		echo '</table><br><br><br>';
 	} 
-	echo "<br><br><green>CSV for copy paste</green><br><br>";
-	foreach($csv as $v) { 
-		echo "$v<br>";
-	}
+	echo "Download: <a class=blink href=?as_xlsx>Excel</a> <a class=blink href=?as_csv>CSV</a><br><br>";
+	$_SESSION['spreadsheet_data']=$csv;
+	$_SESSION['spreadsheet_name']="${group_name}__${quiz_name}";
 } 
 /*}}}*/
 function quizes_summary() {/*{{{*/
@@ -783,7 +814,7 @@ function quiz_results_by_date() {/*{{{*/
 		} else {
 			$collect.="<tr><td>$i<td>$last_name $first_name<td><a href=?debug_student_quiz=$debug_student_quiz class=blink>$grade</a><td>$points<td>$started<td>$group<td>";
 		}
-		$csv[]="$i;$last_name;$first_name;$grade;$points;$group_name";
+		$csv[]=array("$last_name $first_name", "$grade" , "$points", "$group_name");
 		$i++;
 	}
 	if(!empty($collect)) { 
@@ -793,11 +824,9 @@ function quiz_results_by_date() {/*{{{*/
 		echo "<table><thead><th>Id<th>Student<th>$i18n_grade<th>$i18n_points<th>Start<th>Group<th>Comment";
 		echo "$collect";
 		echo '</table><br><br><br>';
-		echo "<br><br><green>CSV for copy paste</green><br><br>";
-		echo "Id;$i18n_last_name;$i18n_first_name;$i18n_grade;$i18n_points;$i18n_group<br>";
-		foreach($csv as $v) { 
-			echo "$v<br>";
-		}
+		echo "Download: <a class=blink href=?as_xlsx>Excel</a> <a class=blink href=?as_csv>CSV</a><br><br>";
+		$_SESSION['spreadsheet_data']=$csv;
+		$_SESSION['spreadsheet_name']="${group_name}__${quiz_name}";
 	} else {
 		echo $_SESSION['i18n_empty_results']; 
 	}
