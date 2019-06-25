@@ -804,6 +804,7 @@ function quiz_results_by_date() {/*{{{*/
 
 	$collect='';
 	$csv=[];
+	$csv[]=array("$i18n_last_name $i18n_first_name", "$i18n_grade", "$i18n_points", "$i18n_group");
 	$i=1;
 	foreach($r as $row) {
 		extract($row);
