@@ -282,7 +282,11 @@ class karramba {/*{{{*/
 		// Authorization was setup during installation, see KARRAMBA vars in /etc/apache2/envvars
 
         extract($_SESSION);
-		$caller=debug_backtrace()[1]['function'];
+		if(!empty(debug_backtrace()[1])) {
+			$caller=debug_backtrace()[1]['function'];
+		} else {
+			$caller="None";
+		}
 
 		$connect=pg_connect("dbname=karramba host=".getenv("KARRAMBA_DB_HOST")." user=".getenv("KARRAMBA_DB_USER")." password=".getenv("KARRAMBA_DB_PASS"));
 		($result=pg_query_params($connect, $qq, $arr)) || $this->reportBug(array("db error\n\ncaller: $caller()\n\n", "$qq", pg_last_error($connect)));
