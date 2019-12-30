@@ -64,7 +64,7 @@ class karramba {/*{{{*/
 /*}}}*/
 	private function reportbug($arr) {/*{{{*/
 		// KARRAMBA_NOTIFY is setup in /etc/apache2/envvars
-		$reportquery=join("\n" , array('--------' , date("G:i:s"), $_SERVER['REMOTE_ADDR'], $_SERVER['HTTP_USER_AGENT'], $_SERVER['REQUEST_URI'], $arr[0] , $arr[1] , $arr[2] , "\n\n"));
+		$reportquery=join("\n" , array('--------' , date("G:i:s"), $_SERVER['REMOTE_ADDR'], $_SERVER['REQUEST_URI'], $arr[0] , $arr[1] , $arr[2] , "\n\n"));
 		mail(getenv("KARRAMBA_NOTIFY"), 'Karramba bug!', "$reportquery", "from: karramba"); 
 		echo "<fatal>".$arr[0]."</fatal>"; 
 		echo "<br><br><br><br><br><a href=".$_SESSION['home_url']."><img id=home src=css/home.svg></a>";
