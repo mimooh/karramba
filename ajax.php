@@ -15,7 +15,7 @@ function studentsSolvingQuizMonitor() {/*{{{*/
 	$result='';
 	$total=0;
 
-	foreach($_SESSION['krr']->query("SELECT quiz_name,group_name,student,student_started,points FROM r WHERE quiz_deactivation IS NOT NULL AND teacher_id=$1", array($_SESSION['teacher_id'])) as $row) {
+	foreach($_SESSION['krr']->query("SELECT quiz_name,group_name,student,student_started,points FROM r WHERE quiz_deactivation IS NOT NULL AND teacher_id=$1 ORDER BY STUDENT", array($_SESSION['teacher_id'])) as $row) {
 		$total++;
 		extract($row);
 		$started=$_SESSION['krr']->extractTime($student_started);
