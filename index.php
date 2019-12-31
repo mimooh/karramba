@@ -281,12 +281,11 @@ function register_used_questions($quiz_id,$questions_ids) { #{{{
 	// were ever used. This is the most reasonable way for update_quiz() to prevent
 	// the growing of the questions list on each save. That's because we cannot simply
 	// remove the old versions of questions and loose the history of student past quizes.
+	    
+	// question_id UNIQUE CONSTRAINT, we don't need duplicates, hence "ON CONFLICT DO NOTHING"
 
-	// DELETE FROM used_questions and INSERT INTO used_questions to prevent the duplicates
-
-	$_SESSION['krr']->query("DELETE FROM used_questions WHERE quiz_id=$1 AND question_id=ANY($2)", array($quiz_id, "{".implode(',', $questions_ids)."}"));
 	foreach($questions_ids as $qq) { 
-		$_SESSION['krr']->query("INSERT INTO used_questions(quiz_id,question_id) VALUES($1,$2)", array($quiz_id, $qq));
+		$_SESSION['krr']->query("INSERT INTO used_questions(quiz_id,question_id) VALUES($1,$2) ON CONFLICT DO NOTHING", array($quiz_id, $qq));
 	}
 }
 /*}}}*/
