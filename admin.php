@@ -601,7 +601,7 @@ function quiz_results_by_name() {/*{{{*/
 	extract($_SESSION);
 
 	quizes_summary();
-	$query="SELECT s.last_name, s.first_name, g.id as group_id, g.group_name, r.student_started, r.points, r.grade, q.quiz_name, r.id AS debug_student_quiz 
+	$query="SELECT s.last_name, s.first_name, s.index, g.id as group_id, g.group_name, r.student_started, r.points, r.grade, q.quiz_name, r.id AS debug_student_quiz 
 	FROM randomized_quizes r
 	LEFT JOIN students s ON r.student_id=s.id
 	LEFT JOIN groups g ON s.group_id=g.id
@@ -613,19 +613,20 @@ function quiz_results_by_name() {/*{{{*/
 		
 	$collect='';
 	$csv=[];
-	$csv[]=array("$i18n_last_name $i18n_first_name", "$i18n_grade", "$i18n_points", "$i18n_group");
+	$csv[]=array("$i18n_last_name $i18n_first_name", "$i18n_grade", "$i18n_points", "$i18n_group","Index");
 	$i=1;
 	foreach($r as $row) {
 		extract($row);
 		$gname=format_group($group_id);
 		$started=$krr->extractDate($student_started);
+		#$collect.="<tr><td>$i<td>$last_name $first_name<td style='opacity:0.1'>$index<td>$points<td>$gname";
 		if(empty($points)) { 
 			$collect.="<tr><td>$i<td>$last_name $first_name<td>-<td>-<td>$started<td>$gname<td><black>$i18n_didnt_complete</black>";
 		} else {
 			$collect.="<tr><td>$i<td>$last_name $first_name<td><a href=?debug_student_quiz=$debug_student_quiz class=blink>$grade</a><td>$points<td>$started<td>$gname<td>";
 		}
 		$i++;
-		$csv[]=array("$last_name $first_name", "$grade" , "$points", "$group_name");
+		$csv[]=array("$last_name $first_name", "$grade" , "$points", "$group_name","$index");
 	}
 
 	if(!empty($collect)) { 
@@ -647,7 +648,7 @@ function xls_formulas() {
 	// * Points must be the third column
 	// * If there are too few records in xls then the array wraps badly, therefore this function
 	// is only useful for > 7 rows.
-
+	extract($_SESSION);
 	$with_formulas=[];
 	if(count($_SESSION['spreadsheet_data']) < 7) { return; }
 	foreach($_SESSION['spreadsheet_data'] as $k=>$record) {
@@ -660,6 +661,7 @@ function xls_formulas() {
 		$with_formulas[]=$record;
 	}
 	$with_formulas[0][7]='Recalculate?';
+	$with_formulas[0][8]="$i18n_grade";
 	$with_formulas[0][10]='H column recalculates according to the below criteria:';
 	$with_formulas[1][10]='from pts';
 	$with_formulas[1][11]='grade';
@@ -703,13 +705,13 @@ function quiz_results_by_name_max() {/*{{{*/
 	extract($_SESSION);
 	quizes_summary();
 
-	$query="SELECT s.last_name, s.first_name, g.group_name, g.id as group_id, q.quiz_name, max(r.points) as points 
+	$query="SELECT s.last_name, s.first_name, s.index, g.group_name, g.id as group_id, q.quiz_name, max(r.points) as points 
 	FROM randomized_quizes r
 	LEFT JOIN students s ON r.student_id=s.id
 	LEFT JOIN groups g ON g.id=s.group_id
 	LEFT JOIN quizes q ON r.quiz_id=q.id
 	WHERE quiz_id=$1 AND s.last_name IS NOT NULL
-	GROUP BY s.last_name, s.first_name, g.group_name, g.id, q.quiz_name
+	GROUP BY s.last_name, s.first_name, g.group_name, g.id, q.quiz_name, s.index
 	ORDER BY g.group_name desc, s.last_name ASC";
 		
 	$r=$krr->query($query, array($_GET['quiz_results_by_name_max'])); 
@@ -717,20 +719,20 @@ function quiz_results_by_name_max() {/*{{{*/
 		
 	$collect='';
 	$csv=[];
-	$csv[]=array("$i18n_last_name $i18n_first_name", "", "$i18n_points", "$i18n_group");
+	$csv[]=array("$i18n_last_name $i18n_first_name", "index", "$i18n_points", "$i18n_group");
 	$i=1;
 	foreach($r as $row) {
 		extract($row);
 		$gname=format_group($group_id);
-		$collect.="<tr><td>$i<td>$last_name $first_name<td>$points<td>$gname";
-		$csv[]=array("$last_name $first_name", "", "$points" , "$group_name");
+		$collect.="<tr><td>$i<td>$last_name $first_name<td style='opacity:0.1'>$index<td>$points<td>$gname";
+		$csv[]=array("$last_name $first_name", "$index", "$points" , "$group_name");
 		$i++;
 	}
 	if(!empty($collect)) { 
 		$quiz_name=$r[0]['quiz_name'];
 		echo "<a style='margin-left:20px' href=?quiz_results_by_name=$_GET[quiz_results_by_name_max] class=blink>$quiz_name</a>";
 		echo "<orange>$quiz_name MAX</orange><br>";
-		echo "<table><thead><th>Id<th>Student<th>$i18n_points<th>$i18n_group";
+		echo "<table><thead><th>Id<th>Student<th>index<th>$i18n_points<th>$i18n_group";
 		echo "$collect";
 		echo '</table><br><br><br>';
 	} 
