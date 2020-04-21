@@ -864,6 +864,14 @@ function owners_images($teachers_ids) { #{{{
 	if(!is_numeric($_GET['quiz_configure'])) { 
 		die("err53: quiz_configure not numeric");
 	}
+
+	$friends=[];
+	foreach($teachers_ids as $kk=>$vv) {
+		$t=$_SESSION['krr']->query("SELECT first_name, last_name FROM teachers WHERE id=$1", array($vv));
+		extract($t[0]);
+		$friends[]="img/$vv/$_GET[quiz_configure] ($first_name $last_name)";
+	}
+
 	foreach($teachers_ids as $k=>$v) {
 		if(!is_numeric($v)) { 
 			die("err54: $v should be numeric");
@@ -887,8 +895,17 @@ function owners_images($teachers_ids) { #{{{
 		if(is_link("img/$v/$_GET[quiz_configure]")) {
 			system("rm -rf 'img/$v/$_GET[quiz_configure]'");
 		}
-		symlink("../../$master", "img/$v/$_GET[quiz_configure]");
+
+		if (!file_exists("img/$v/$_GET[quiz_configure]")) { 
+			symlink("../../$master", "img/$v/$_GET[quiz_configure]");
+		} else {
+			if(!is_link("img/$v/$_GET[quiz_configure]")) {
+				$_SESSION['krr']->fatal("err56: Possibly some backup/restore operations introduced a folder in place of a symlink. For the shared quizes, the slave must be a symlink to the master.<br><br>You need to inform the karramba admin who is slave/master here:<br><br>".implode("<br>", $friends));
+
+			}
+		}
 	}
+	exit();
 }
 /*}}}*/
 function manage_owners() {/*{{{*/
