@@ -59,9 +59,13 @@ class karramba {/*{{{*/
 			$_SESSION[trim($x[0])]=trim($x[1]);
 			
 		}   
+
+		$_SESSION['KARRAMBA_EXTRA_MENUS']=json_decode(getenv("KARRAMBA_EXTRA_MENUS"),1);
 	}
 
+
 /*}}}*/
+
 	private function reportbug($arr) {/*{{{*/
 		// KARRAMBA_NOTIFY is setup in /etc/apache2/envvars
 		$reportquery=join("\n" , array('--------' , date("G:i:s"), $_SERVER['REMOTE_ADDR'], $_SERVER['REQUEST_URI'], $arr[0] , $arr[1] , $arr[2] , "\n\n"));

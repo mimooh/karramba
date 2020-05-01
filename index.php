@@ -30,7 +30,7 @@ function login_form(){/*{{{*/
 	<img style='margin:0px; background:none' src=img/karramba.png><br>
 	</form>
 	<a class=blink style='font-size:11px' href=".getenv("KARRAMBA_NEW_STUDENT_FORM_URL").">New student</a>
-	<a class=rlink style='font-size:11px' href=admin.php>admin</a>
+	<a class=rlink style='font-size:11px' href=admin.php>Admin</a>
 	</div>
 	</center>
 	"; 
@@ -306,8 +306,12 @@ function db_insert_randomized_quiz($questions,$answers,$cv,$ov,$qv) { /*{{{*/
 
 function menu(){/*{{{*/
 	extract($_SESSION);
-	echo "<student_menu>";
-	echo "<a href=?q class=rlink>".$_SESSION['i18n_logout']." ".$_SESSION['last_name']." / ".$_SESSION['group_name']."</a></div> </student_menu>";
+	if(isset($_SESSION['KARRAMBA_EXTRA_MENUS']['student_menu'])) { $extra_menus=$_SESSION['KARRAMBA_EXTRA_MENUS']['student_menu']; }  else { $extra_menus=''; }
+	echo "
+	<student_menu>
+	$extra_menus
+	<a href=?q class=rlink>".$_SESSION['i18n_logout']." ".$_SESSION['last_name']." / ".$_SESSION['group_name']."</a>
+	</student_menu>";
 }/*}}}*/
 function main() {/*{{{*/
 	$_SESSION['krr']->htmlHead();

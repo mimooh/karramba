@@ -11,11 +11,14 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 function teacher_login_form(){/*{{{*/
 	extract($_SESSION);
 	$_SESSION['home_url']=$_SERVER['SCRIPT_NAME'];
+	if(isset($_SESSION['KARRAMBA_EXTRA_MENUS']['admin_greeter'])) { $extra_menus="<br><br>".$_SESSION['KARRAMBA_EXTRA_MENUS']['admin_greeter']."<br><br>"; }  else { $extra_menus=''; }
+
 	echo "
 	<FORM METHOD=POST>
 	<center>
+	$extra_menus
 	<br><br>
-	<h2>$i18n_teacher login</h2>
+	$i18n_teacher login
 	<br><br>
 	Email<br>
 	<input type=text name=teacher_email size=30> 
@@ -25,6 +28,7 @@ function teacher_login_form(){/*{{{*/
 	<br><br>
 	<input type=submit name=logMeIn value=$i18n_submit>
 	</center>
+	
 	</FORM>"; 
 
 }/*}}}*/
@@ -240,7 +244,8 @@ function run_quiz(){/*{{{*/
 	if(empty($_POST['active_quizes_ids'])) { 
 		return;
 	}
-	$quiz_deactivation=date("Y-m-d G:i:s", strtotime("+20 minutes"));
+	#$quiz_deactivation=date("Y-m-d G:i:s", strtotime("+20 minutes"));
+	$quiz_deactivation=date("Y-m-d G:i:s", strtotime("+12 hours"));
 	foreach(explode(",", $_POST['active_quizes_ids']) as $run_quiz) { 
 		$r=$krr->query("SELECT * FROM quizes_instances WHERE quiz_deactivation IS NOT NULL AND teacher_id=$1 AND quiz_id=$2 AND group_id=ANY($3)" , 
 		array($_SESSION['teacher_id'], $run_quiz, "{".$_POST['active_groups_ids']."}"));
@@ -938,7 +943,7 @@ function manage_owners() {/*{{{*/
 /*}}}*/
 function menu(){/*{{{*/
 	extract($_SESSION);
-	$debug_menu='';
+	if(isset($_SESSION['KARRAMBA_EXTRA_MENUS']['admin_menu'])) { $extra_menus=$_SESSION['KARRAMBA_EXTRA_MENUS']['admin_menu']; }  else { $extra_menus=''; }
 
 	echo "<teacher_menu> 
 		  <a title='$i18n_run_quizes' href=?run_quizes class=rlink><i class='fas fa-cog fa-1x'></i></a>
@@ -946,7 +951,7 @@ function menu(){/*{{{*/
 		  <a title='Students' href=?students_list class=rlink><i class='fas fa-user-cog fa-1x'></i></a>
 		  <a title='$i18n_configure' href=?quizes_configure class=rlink><i class='fas fa-tools fa-1x'></i></a>
 		  <div style='float:right; margin-right:10px'>
-		  $debug_menu
+		  $extra_menus
 		  <a title='$i18n_logout' href=?q class=rlink><i class='fas fa-sign-out-alt fa-1x'></i></a>
 		  </div>
 		  </teacher_menu>

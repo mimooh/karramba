@@ -38,6 +38,10 @@
 	# Location of karramba on the disk
 	WWW_DIR="/var/www/ssl/karramba"
 
+	# Private buttons for you karramba apache server
+	KARRAMBA_EXTRA_MENUS='{ "student_menu": "<a class=rlink href=/>pomoc</a>", "admin_menu": "<a class=rlink href=/admin.php>pomoc</a>", "admin_greeter": "<a target=_blank class=rlink href=/>Welcome my son!</a>" }'
+
+
 # ====================== END OF CONFIG ============================
 	
 # Run this shell script to setup the project. 
@@ -56,6 +60,7 @@ echo "export KARRAMBA_DB_PASS='$KARRAMBA_DB_PASS'" >> $temp
 echo "export KARRAMBA_DB_HOST='$KARRAMBA_DB_HOST'" >> $temp
 echo "export KARRAMBA_LANG='$KARRAMBA_LANG'" >> $temp
 echo "export KARRAMBA_NOTIFY='$KARRAMBA_NOTIFY'" >> $temp
+echo "export KARRAMBA_EXTRA_MENUS='$KARRAMBA_EXTRA_MENUS'" >> $temp
 echo "export KARRAMBA_NEW_STUDENT_FORM_URL='$KARRAMBA_NEW_STUDENT_FORM_URL'" >> $temp
 echo "export KARRAMBA_NEW_STUDENT_SECRET='$KARRAMBA_NEW_STUDENT_SECRET'" >> $temp
 echo "export KARRAMBA_ADM_SESSION_NAME='$KARRAMBA_ADM_SESSION_NAME'" >> $temp
