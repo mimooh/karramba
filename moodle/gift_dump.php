@@ -57,6 +57,7 @@ $collect=[];
 foreach($r as $k=>$v) {
 	extract($v);
 	$key="${last_name}_${quiz_name}_$quiz_id.txt";
+	$key=preg_replace("/\s+/", "_", $key);
 	if(!isset($collect[$key])) { $collect[$key]=[]; }
 	$vect=str_split($correct_vector);
 	if($vect[0]==1) { $op0='='; } else { $op0='~'; } 
@@ -66,9 +67,8 @@ foreach($r as $k=>$v) {
 	$collect[$key][]="$question"."{"."$op0$answer0 $op1$answer1 $op2$answer2"."}";
 }
 
-#dd($collect);
 foreach($collect as $k=>$v) {
-	file_put_contents(strtolower($k), implode("\n", $v));
+	file_put_contents(mb_strtolower($k), implode("\n", $v));
 }
 
 
