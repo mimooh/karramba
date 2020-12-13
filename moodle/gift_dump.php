@@ -68,7 +68,7 @@ foreach($r as $k=>$v) {
 }
 
 foreach($collect as $k=>$v) {
-	file_put_contents(mb_strtolower($k), implode("\n", $v));
+	file_put_contents(mb_strtolower($k), implode("\n\n", $v));
 }
 
 
