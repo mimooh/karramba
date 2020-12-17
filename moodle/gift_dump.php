@@ -54,21 +54,31 @@ function query($qq,$arr=[],$success=0) { /*{{{*/
 
 $r=query("select * from vq where quiz_id in(1,12) order by id");
 $collect=[];
+$current_key="";
 foreach($r as $k=>$v) {
 	extract($v);
 	$key="${last_name}_${quiz_name}_$quiz_id.txt";
+	if($current_key!=$key) { $current_key=$key; $i=1; }
 	$key=preg_replace("/\s+/", "_", $key);
 	if(!isset($collect[$key])) { $collect[$key]=[]; }
 	$vect=str_split($correct_vector);
-	if($vect[0]==1) { $op0='='; } else { $op0='~'; } 
-	if($vect[1]==1) { $op1='='; } else { $op1='~'; } 
-	if($vect[2]==1) { $op2='='; } else { $op2='~'; } 
 
-	$collect[$key][]="$question"."{"."$op0$answer0 $op1$answer1 $op2$answer2"."}";
+	$sum=array_sum($vect);
+	if($sum==1) { $percent=100; }
+	if($sum==2) { $percent=50; }
+	if($sum==3) { $percent=33.3333; }
+
+	if($vect[0]==1) { $op0="~%$percent%"; } else { $op0='~%-100%'; } 
+	if($vect[1]==1) { $op1="~%$percent%"; } else { $op1='~%-100%'; } 
+	if($vect[2]==1) { $op2="~%$percent%"; } else { $op2='~%-100%'; } 
+
+	$collect[$key][]="::Pytanie_".str_pad($i,3,'0', STR_PAD_LEFT)."_$question::$question"."{"."$op0$answer0 $op1$answer1 $op2$answer2"."}";
+	
+	$i++;
 }
 
 foreach($collect as $k=>$v) {
-	file_put_contents(mb_strtolower($k), implode("\n\n", $v));
+	file_put_contents(mb_strtolower($k), implode("\n\n", $v)."\n");
 }
 
 
