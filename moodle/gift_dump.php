@@ -51,11 +51,21 @@ function query($qq,$arr=[],$success=0) { /*{{{*/
 
 }
 /*}}}*/
+function moodle_ctrls_replace($v) {
+	foreach(array('~', '=', '#', '{', '}') as $i) {
+		$v['question']=str_replace($i, "\\$i", $v['question']);
+		$v['answer0']=str_replace($i, "\\$i", $v['answer0']);
+		$v['answer1']=str_replace($i, "\\$i", $v['answer1']);
+		$v['answer2']=str_replace($i, "\\$i", $v['answer2']);
+	}
+	return $v;
+}
 
 $r=query("select * from vq where quiz_id in(1,12) order by id");
 $collect=[];
 $current_key="";
 foreach($r as $k=>$v) {
+	$v=moodle_ctrls_replace($v);
 	extract($v);
 	$key="${last_name}_${quiz_name}_$quiz_id.txt";
 	if($current_key!=$key) { $current_key=$key; $i=1; }
@@ -80,6 +90,5 @@ foreach($r as $k=>$v) {
 foreach($collect as $k=>$v) {
 	file_put_contents(mb_strtolower($k), implode("\n\n", $v)."\n");
 }
-
 
 ?>
