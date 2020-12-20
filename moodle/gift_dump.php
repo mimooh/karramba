@@ -52,7 +52,7 @@ function query($qq,$arr=[],$success=0) { /*{{{*/
 }
 /*}}}*/
 function moodle_ctrls_replace($v) {
-	foreach(array('~', '=', '#', '{', '}') as $i) {
+	foreach(array(':', '~', '=', '#', '{', '}') as $i) {
 		$v['question']=str_replace($i, "\\$i", $v['question']);
 		$v['answer0']=str_replace($i, "\\$i", $v['answer0']);
 		$v['answer1']=str_replace($i, "\\$i", $v['answer1']);
