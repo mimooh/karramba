@@ -61,7 +61,7 @@ function moodle_ctrls_replace($v) {
 	return $v;
 }
 
-$r=query("select * from vq where quiz_id in(1,12) order by id");
+$r=query("select * from vq order by id");
 $collect=[];
 $current_key="";
 foreach($r as $k=>$v) {
@@ -88,7 +88,8 @@ foreach($r as $k=>$v) {
 }
 
 foreach($collect as $k=>$v) {
-	file_put_contents(mb_strtolower($k), implode("\n\n", $v)."\n");
+	$file=str_replace("/", "_", $k);
+	file_put_contents(mb_strtolower($file), implode("\n\n", $v)."\n");
 }
 
 ?>
