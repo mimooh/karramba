@@ -19,24 +19,8 @@ function dd() { #{{{
 }
 /*}}}*/
 # db schema {{{
-#echo "select * from vq order by quiz_id limit 5" | psql karramba
-
-# echo "
-# DROP VIEW IF EXISTS vq CASCADE;
-# CREATE VIEW vq AS select 
-# 	q.quiz_name,
-# 	o.teacher_id,
-# 	t.last_name,
-# 	que.*
-# 
-# 	FROM questions que
-# 	left join quizes q on (que.quiz_id=q.id) 
-# 	left join quizes_owners o on (o.quiz_id=q.id) 
-# 	left join teachers t on (t.id=o.teacher_id) 
-# 	where deleted=false
-# ;
-# select * from vq limit 5;
-# " | psql karramba
+# echo " DROP VIEW IF EXISTS vq CASCADE; CREATE VIEW vq AS select q.quiz_name, o.teacher_id, t.last_name, que.* FROM questions que left join quizes q on (que.quiz_id=q.id) left join quizes_owners o on (o.quiz_id=q.id) left join teachers t on (t.id=o.teacher_id) where deleted=false ; select * from vq limit 5; " | psql karramba
+# echo "select * from vq where last_name ~ 'Kreń' and quiz_name ~ 'SWDR' order by quiz_id" | psql karramba
 /*}}}*/
 
 function query($qq,$arr=[],$success=0) { /*{{{*/
@@ -51,7 +35,7 @@ function query($qq,$arr=[],$success=0) { /*{{{*/
 
 }
 /*}}}*/
-function moodle_ctrls_replace($v) {
+function moodle_ctrls_replace($v) {/*{{{*/
 	foreach(array(':', '~', '=', '#', '{', '}') as $i) {
 		$v['question']=str_replace($i, "\\$i", $v['question']);
 		$v['answer0']=str_replace($i, "\\$i", $v['answer0']);
@@ -60,8 +44,10 @@ function moodle_ctrls_replace($v) {
 	}
 	return $v;
 }
-
-$r=query("select * from vq order by id");
+/*}}}*/
+#$r=query("select * from vq where last_name~'Kreński' and quiz_name ~ 'SWDR'  order by quiz_name,last_name,id");
+#$r=query("select * from vq where quiz_name~'SWDR' order by quiz_name,last_name,id");
+$r=query("select * from vq order by quiz_name,last_name,id");
 $collect=[];
 $current_key="";
 foreach($r as $k=>$v) {
