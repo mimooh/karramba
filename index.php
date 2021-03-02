@@ -55,7 +55,7 @@ function get_karramba_student_id() {# {{{
 /*}}}*/
 function logged_outside() {/*{{{*/
 	// We are already logged elsewhere
-	$row=$_SESSION['krr']->query("SELECT id,group_id, last_name, first_name, password, index FROM students WHERE index=$1", array($_SESSION['student_id']));
+	$row=$_SESSION['krr']->query("SELECT id,group_id, last_name, first_name, index FROM students WHERE index=$1", array($_SESSION['student_id']));
 	$_SESSION+=$row[0];
 	$_SESSION['student']=$row[0]['last_name']." ".$row[0]['first_name'];
 	$_SESSION['karramba_student_id']=$row[0]['id'];
@@ -120,8 +120,11 @@ function choose_quiz() {/*{{{*/
 		echo "<FORM><input type=hidden name=quiz_instance_id value=1>PIN: <input type=number name=pin value=1111 style='width:60px'> <input type=submit value=ExampleQuiz></FORM>";
 		foreach($_SESSION['krr']->query("SELECT id FROM quizes_instances WHERE group_id=$1 AND quiz_deactivation IS NOT NULL AND quiz_deactivation > now()", array($_SESSION['group_id'])) as $r) { 
 			$group_name=$_SESSION['krr']->query("SELECT t.group_name FROM groups t, quizes_instances q WHERE t.id=q.group_id AND q.id=$1", array($r['id']))[0]['group_name'];
-			$quiz_name=$_SESSION['krr']->query("SELECT t.quiz_name FROM quizes t, quizes_instances q WHERE t.id=q.quiz_id AND q.id=$1", array($r['id']))[0]['quiz_name'];
-			echo "<br><FORM><input type=hidden name=quiz_instance_id value=".$r['id'].">PIN: <input type=number name=pin style='width:60px'> <input type=submit value='$group_name / $quiz_name'></FORM>";
+			$qq=$_SESSION['krr']->query("SELECT t.quiz_name FROM quizes t, quizes_instances q WHERE t.id=q.quiz_id AND q.id=$1", array($r['id'])); 
+			if(isset($qq[0]['quiz_name'])) { // quiz started but removed by the owner (very rare)
+				$quiz_name=$qq[0]['quiz_name'];
+				echo "<br><FORM><input type=hidden name=quiz_instance_id value=".$r['id'].">PIN: <input type=number name=pin style='width:60px'> <input type=submit value='$group_name / $quiz_name'></FORM>";
+			}
 		}
 	}
 }
