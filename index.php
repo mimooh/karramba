@@ -1,5 +1,5 @@
 <?PHP
-session_name('karramba_student');
+session_name('student'); 
 require_once("libKarramba.php");
 
 function login_form(){/*{{{*/
@@ -36,7 +36,7 @@ function login_form(){/*{{{*/
 	"; 
 
 }/*}}}*/
-function get_student_id() {# {{{
+function get_karramba_student_id() {# {{{
 	// First we try jquery-ui:
 	if(!empty($_POST['studentIdFromLogin'])) { 
 		return $_POST['studentIdFromLogin'];
@@ -53,25 +53,38 @@ function get_student_id() {# {{{
 	return NULL;
 }
 /*}}}*/
+function logged_outside() {/*{{{*/
+	// We are already logged elsewhere
+	$row=$_SESSION['krr']->query("SELECT id,group_id, last_name, first_name, password, index FROM students WHERE index=$1", array($_SESSION['student_id']));
+	$_SESSION+=$row[0];
+	$_SESSION['student']=$row[0]['last_name']." ".$row[0]['first_name'];
+	$_SESSION['karramba_student_id']=$row[0]['id'];
+	$_SESSION['home_url']=getenv("KARRAMBA_STUDENT_HOME_URL");
+	$_SESSION['group_name']=$_SESSION['krr']->query("SELECT group_name FROM groups WHERE id=$1", array($row[0]['group_id']))[0]['group_name'];
+}
+/*}}}*/
 function do_login(){/*{{{*/
-	// Student can login with a pass or an index
+	if(isset($_SESSION['student_id'])) { logged_outside(); return; }
+	if(!isset($_POST['logMeIn'])) { return; }
 	extract($_SESSION);
 
-	$student_id=get_student_id();
-	if(empty($student_id))        { $krr->msg($i18n_bad_login); return; }
+	$karrarmba_student_id=get_karramba_student_id();
+	if(empty($karrarmba_student_id))        { $krr->msg($i18n_bad_login); return; }
 	if(empty($_POST['password'])) { $krr->msg($i18n_bad_login); return; }
 
-	$row=$krr->query("SELECT id as student_id, group_id, last_name, first_name, password, index FROM students WHERE id=$1", array($student_id));
+	$row=$krr->query("SELECT id as karrarmba_student_id, group_id, last_name, first_name, password, index FROM students WHERE id=$1", array($karrarmba_student_id));
 
 	if(isset($row) && ($row[0]['password']==$_POST['password'] || $row[0]['index']==$_POST['password'])) {
 		$_SESSION+=$row[0];
 		$_SESSION['student']=$row[0]['last_name']." ".$row[0]['first_name'];
-		$_SESSION['in']=1;
+		$_SESSION['karramba_student_id']=$row[0]['karramba_student_id'];
 		$_SESSION['home_url']=$_SERVER['SCRIPT_NAME'];
 		$_SESSION['group_name']=$krr->query("SELECT group_name FROM groups WHERE id=$1", array($row[0]['group_id']))[0]['group_name'];
 	} else {
 		$krr->msg($i18n_bad_login);
 	}
+
+	login_form(); 
 }/*}}}*/
 function do_logout(){/*{{{*/
 	$url=$_SESSION['home_url'];
@@ -82,7 +95,7 @@ function check_cheetaz(){/*{{{*/
 	//This function checks if someone has submited test on students behalf from another phone (outside the class room) - 
 	//We are checking the HTTP_USER_AGENT variable
 	extract($_SESSION);
-	$db_agent=$_SESSION['krr']->query("SELECT student_started, agent from randomized_quizes where student_id =$1 and agent is not null and student_started > NOW() - INTERVAL '30 MINUTES' order by id desc limit 1", array($_SESSION['student_id']) ); // getting last HTTP_USER_AGENT of user from database within 30 minutest period
+	$db_agent=$_SESSION['krr']->query("SELECT student_started, agent from randomized_quizes where student_id =$1 and agent is not null and student_started > NOW() - INTERVAL '30 MINUTES' order by id desc limit 1", array($_SESSION['karramba_student_id']) ); // getting last HTTP_USER_AGENT of user from database within 30 minutest period
 	if(!empty($db_agent)){ //if is empty -> student has not submited any tests within the INTERVAL
 		if($_SERVER['HTTP_USER_AGENT']!=$db_agent[0]['agent']  ){ //current HTTP_USER_AGENT varies from that stored in DB
 #		dd(array($db_agent, $_SERVER['HTTP_USER_AGENT']) $student_results);
@@ -94,10 +107,11 @@ function check_cheetaz(){/*{{{*/
 function choose_quiz() {/*{{{*/
 	// After student is logged he needs to see the quizes for him
 	// quiz_deactivation IS NULL means the quiz has expired
-	# psql karramba -c "SELECT student,pin,quiz_deactivation from r "
+	# echo "SELECT * from students order by group_id" | psql karramba
+	# echo "SELECT * from groups where id=1" | psql karramba
 	echo "<br>";
 	$hanging=$_SESSION['krr']->query("SELECT randomized_id,quiz_instance_id,group_name,quiz_name,student_deadline FROM r 
-	WHERE student_id=$1 AND quiz_deactivation IS NOT NULL AND student_finished IS NULL", array($_SESSION['student_id']));
+	WHERE student_id=$1 AND quiz_deactivation IS NOT NULL AND student_finished IS NULL", array($_SESSION['karramba_student_id']));
 	if(!empty($hanging[0])) {
 		extract($hanging[0]);
 		$_SESSION['krr']->cannot($_SESSION['i18n_need_to_complete']);
@@ -160,7 +174,7 @@ function is_student_allowed() {/*{{{*/
 	}
 
 	// Test2: quiz submitted?
-	$r=$krr->query("SELECT randomized_id FROM r WHERE student_id=$1 AND quiz_instance_id=$2 AND student_finished IS NOT NULL", array($_SESSION['student_id'], $_GET['quiz_instance_id'])) ;
+	$r=$krr->query("SELECT randomized_id FROM r WHERE student_id=$1 AND quiz_instance_id=$2 AND student_finished IS NOT NULL", array($_SESSION['karramba_student_id'], $_GET['quiz_instance_id'])) ;
 	if(!empty($r)) { 
 		$krr->fatal($_SESSION['i18n_quiz_submited_before']);
 	}
@@ -170,7 +184,7 @@ function is_student_allowed() {/*{{{*/
 function which_quiz_to_serve() {/*{{{*/
 	// Either the interrupted quiz or the new quiz 
 	# psql karramba -c "SELECT quiz_name,student,group_name,student_finished,student_deadline, quiz_deactivation,student_answers_vector  FROM r"
-	$hanging=$_SESSION['krr']->query("SELECT randomized_id,student_started FROM r WHERE student_id=$1 AND student_finished IS NULL", array($_SESSION['student_id']));
+	$hanging=$_SESSION['krr']->query("SELECT randomized_id,student_started FROM r WHERE student_id=$1 AND student_finished IS NULL", array($_SESSION['karramba_student_id']));
 
 	if(!empty($hanging[0])) {
 		return $_SESSION['krr']->db_serve_interrupted_quiz($hanging[0]['randomized_id'], 0);
@@ -295,7 +309,7 @@ function db_insert_randomized_quiz($questions,$answers,$cv,$ov,$qv) { /*{{{*/
 	$deadline=date("Y-m-d H:i:s", strtotime("+ $timeout minutes"));
 
 	$r=$_SESSION['krr']->query("SELECT quiz_id, teacher_id FROM quizes_instances WHERE id=$1", array($_GET['quiz_instance_id']))[0];
-	$query_params=array(join(",", $qv), join(",", $ov), join(",", $cv), $_SESSION['student_id'], $_GET['quiz_instance_id'], $r['quiz_id'], $r['teacher_id'], $deadline);
+	$query_params=array(join(",", $qv), join(",", $ov), join(",", $cv), $_SESSION['karramba_student_id'], $_GET['quiz_instance_id'], $r['quiz_id'], $r['teacher_id'], $deadline);
 
 	$id=$_SESSION['krr']->query("INSERT INTO randomized_quizes(questions_vector, order_vector, correct_answers_vector, student_id, quiz_instance_id, quiz_id, teacher_id, student_deadline) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id", $query_params)[0]['id'];
 	register_used_questions($r['quiz_id'], $qv);
@@ -317,18 +331,16 @@ function main() {/*{{{*/
 	$_SESSION['krr']->htmlHead();
 	if(isset($_GET['q']))   { do_logout(); }
 
-	if(!isset($_SESSION['in'])) {
-		if(isset($_POST['logMeIn']))        { do_login(); }
-		if(!isset($_SESSION['student_id'])) { login_form(); }
+	if(!isset($_SESSION['karramba_student_id'])) {
+		do_login(); 
 	} 
 
-	if(isset($_SESSION['in'])) {
+	if(isset($_SESSION['karramba_student_id'])) {
 		if(empty($_GET))                        { menu(); }
 		if(isset($_GET['quiz_instance_id']))    { display_quiz(); }
 		else                                    { choose_quiz(); }
 
 	}
-	#$_SESSION['krr']->debugKarramba();
 }
 /*}}}*/
 
