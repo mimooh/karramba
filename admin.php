@@ -8,6 +8,7 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 # test
 
+
 function teacher_login_form(){/*{{{*/
 	extract($_SESSION);
 	$_SESSION['home_url']=$_SERVER['SCRIPT_NAME'];
@@ -32,13 +33,14 @@ function teacher_login_form(){/*{{{*/
 	</FORM>"; 
 
 }/*}}}*/
-function check_external_authentication(){/*{{{*/
+function logged_outside(){/*{{{*/
 	// We may be authenticated in another system, which is indicated by ['user_id'] and the matching session_name().
 	// But check here if we are really ok
 	$row=$_SESSION['krr']->query("SELECT id as teacher_id, last_name, first_name FROM teachers WHERE id=$1", array($_SESSION['user_id']));
 	if(!empty($row[0]['last_name'])) { 
 		$_SESSION+=$row[0];
 		$_SESSION['teacher_in']=1;
+		$_SESSION['home_url']=getenv("KARRAMBA_ADMIN_HOME_URL");
 	} 
 
 }/*}}}*/
@@ -647,7 +649,7 @@ function quiz_results_by_name() {/*{{{*/
 	$_SESSION['spreadsheet_name']="${group_name}__${quiz_name}";
 } 
 /*}}}*/
-function xls_formulas() {
+function xls_formulas() {/*{{{*/
 	// * Since grades are frozen in database for historic reasons, the teacher is free
 	// to use xls formulas to recalculate grades with lookup()
 	// * Points must be the third column
@@ -680,6 +682,7 @@ function xls_formulas() {
 
 	$_SESSION['spreadsheet_data']=$with_formulas ;
 }
+/*}}}*/
 function spreadsheet() { #{{{
 	$spreadsheet = new Spreadsheet();
 	$sheet = $spreadsheet->getActiveSheet();
@@ -967,7 +970,7 @@ function main() {/*{{{*/
 
 	if(isset($_GET['q']))  { do_logout(); }
 	if(isset($_SESSION['user_id']) and empty($_SESSION['teacher_in'])) { 
-		check_external_authentication();	
+		logged_outside();	
 	}
 
 	if(!isset($_SESSION['teacher_in'])) {
