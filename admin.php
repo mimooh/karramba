@@ -801,7 +801,7 @@ function quizes_results_by_date() {/*{{{*/
 function quiz_results_by_date() {/*{{{*/
 	extract($_SESSION);
 	$r=$krr->query("
-		SELECT g.group_name, q.quiz_name, r.student_started, r.points, r.grade, r.id AS debug_student_quiz, s.last_name, s.first_name, i.group_id, i.quiz_activation FROM randomized_quizes r
+		SELECT g.group_name, q.quiz_name, r.student_started, r.points, r.grade, r.id AS debug_student_quiz, s.last_name, s.first_name, s.index, i.group_id, i.quiz_activation FROM randomized_quizes r
 		LEFT JOIN students s ON s.id=r.student_id
 		LEFT JOIN groups g ON g.id=s.group_id
 		LEFT JOIN quizes_instances i ON i.id=r.quiz_instance_id
@@ -814,7 +814,7 @@ function quiz_results_by_date() {/*{{{*/
 
 	$collect='';
 	$csv=[];
-	$csv[]=array("$i18n_last_name $i18n_first_name", "$i18n_grade", "$i18n_points", "$i18n_group");
+	$csv[]=array("$i18n_last_name $i18n_first_name", "$i18n_grade", "$i18n_points", "$i18n_group", "index");
 	$i=1;
 	foreach($r as $row) {
 		extract($row);
@@ -825,7 +825,7 @@ function quiz_results_by_date() {/*{{{*/
 		} else {
 			$collect.="<tr><td>$i<td>$last_name $first_name<td><a href=?debug_student_quiz=$debug_student_quiz class=blink>$grade</a><td>$points<td>$started<td>$group<td>";
 		}
-		$csv[]=array("$last_name $first_name", "$grade" , "$points", "$group_name");
+		$csv[]=array("$last_name $first_name", "$grade" , "$points", "$group_name", "$index");
 		$i++;
 	}
 	if(!empty($collect)) { 
