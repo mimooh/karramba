@@ -971,7 +971,6 @@ function main() {/*{{{*/
 	if(isset($_SESSION['teacher_in'])) {
 		if(isset($_GET['as_xlsx'])) { spreadsheet(); }
 		if(isset($_GET['as_csv']))  { spreadsheet(); }
-		if(isset($_GET['as_screen']))  { as_screen(); }
 	}
 	$_SESSION['krr']->htmlHead();
 	echo "<link type='text/css' rel='stylesheet' href='css/admin.css' />";
@@ -1008,6 +1007,7 @@ function main() {/*{{{*/
 		if(isset($_GET['quiz_results_by_name_max'])) { quiz_results_by_name_max(); }
 		if(isset($_GET['quizes_configure']))         { quizes_configure(); }
 		if(isset($_GET['students_list']))            { students_list(); }
+		if(isset($_GET['as_screen']))                { as_screen(); }
 
 		echo "</teacher_body>";
 	}
