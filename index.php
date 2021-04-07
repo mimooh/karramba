@@ -64,7 +64,13 @@ function logged_outside() {/*{{{*/
 }
 /*}}}*/
 function do_login(){/*{{{*/
-	if(isset($_SESSION['student_id'])) { logged_outside(); return; }
+	if(isset($_SESSION['student_id'])) { 
+		logged_outside(); 
+		return; 
+	}else{
+		header("location:/");  //redirect to login page
+		#header("location:/student/?wroc_do=karramba");  //redirect to login page
+	}
 	if(!isset($_POST['logMeIn'])) { return; }
 	extract($_SESSION);
 
