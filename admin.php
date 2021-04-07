@@ -644,7 +644,7 @@ function quiz_results_by_name() {/*{{{*/
 		echo "$collect";
 		echo '</table><br><br><br>';
 	} 
-	echo "Download: <a class=blink href=?as_xlsx>Excel</a> <a class=blink href=?as_csv>CSV</a><br><br>";
+	echo "Download: <a class=blink href=?as_xlsx>Excel</a> <a class=blink href=?as_csv>CSV</a> <a class=blink href=?as_screen>Screen</a> <br><br>";
 	$_SESSION['spreadsheet_data']=$csv;
 	$_SESSION['spreadsheet_name']="${group_name}__${quiz_name}";
 } 
@@ -709,6 +709,13 @@ function spreadsheet() { #{{{
 	exit();
 }
 /*}}}*/
+function as_screen() { #{{{
+	foreach($_SESSION['spreadsheet_data'] as $v) {
+		echo implode(";", $v)."<br>";
+	}
+	exit();
+}
+/*}}}*/
 function quiz_results_by_name_max() {/*{{{*/
 	extract($_SESSION);
 	quizes_summary();
@@ -744,7 +751,7 @@ function quiz_results_by_name_max() {/*{{{*/
 		echo "$collect";
 		echo '</table><br><br><br>';
 	} 
-	echo "Download: <a class=blink href=?as_xlsx>Excel</a> <a class=blink href=?as_csv>CSV</a><br><br>";
+	echo "Download: <a class=blink href=?as_xlsx>Excel</a> <a class=blink href=?as_csv>CSV</a> <a class=blink href=?as_screen>Screen</a> <br><br>";
 	$_SESSION['spreadsheet_data']=$csv;
 	$_SESSION['spreadsheet_name']="${group_name}__${quiz_name}";
 } 
@@ -835,7 +842,7 @@ function quiz_results_by_date() {/*{{{*/
 		echo "<table><thead><th>Id<th>Student<th>$i18n_grade<th>$i18n_points<th>Start<th>Group<th>Comment";
 		echo "$collect";
 		echo '</table><br><br><br>';
-		echo "Download: <a class=blink href=?as_xlsx>Excel</a> <a class=blink href=?as_csv>CSV</a><br><br>";
+		echo "Download: <a class=blink href=?as_xlsx>Excel</a> <a class=blink href=?as_csv>CSV</a> <a class=blink href=?as_screen>Screen</a> <br><br>";
 		$_SESSION['spreadsheet_data']=$csv;
 		$_SESSION['spreadsheet_name']="${group_name}__${quiz_name}";
 	} else {
@@ -964,6 +971,7 @@ function main() {/*{{{*/
 	if(isset($_SESSION['teacher_in'])) {
 		if(isset($_GET['as_xlsx'])) { spreadsheet(); }
 		if(isset($_GET['as_csv']))  { spreadsheet(); }
+		if(isset($_GET['as_screen']))  { as_screen(); }
 	}
 	$_SESSION['krr']->htmlHead();
 	echo "<link type='text/css' rel='stylesheet' href='css/admin.css' />";
