@@ -11,7 +11,8 @@ function getStudentLogin($str) {/*{{{*/
 }
 /*}}}*/
 function studentsSolvingQuizMonitor() {/*{{{*/
-	//return;
+	if(!isset($_SESSION['teacher_id'])) { return; }
+
 	$result='';
 	$total=0;
 
