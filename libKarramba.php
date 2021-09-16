@@ -6,23 +6,6 @@ ini_set('display_startup_errors',1);
 $_SESSION['current_date']=date("Y-m-d");
 $_SESSION['krr']=new karramba();
 
-# debug/*{{{*/
-
-function dd() {
-	foreach(func_get_args() as $v) {
-		echo "<pre>";
-		$out=print_r($v,1);
-		echo htmlspecialchars($out);
-		echo "</pre>";
-	}
-	echo "<br><br><br><br>";
-}
-function dd2($arr) {
-	$out=print_r($arr,1);
-	echo $out;
-}
-
-/*}}}*/
 function fix_nulls($arr) { /*{{{*/
 	// Prepares data for db insert: trims and s//NULL/
 
