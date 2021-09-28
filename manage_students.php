@@ -62,16 +62,10 @@ function students_list() {/*{{{*/
 		echo "<table><tr><td>$i18n_secret:<td><h1><help title='$i18n_help_what_is_secret'>".getenv("KARRAMBA_NEW_STUDENT_SECRET")."</help></h1></table>";
 	}
 
-	$r=$_SESSION['krr']->query("SELECT * FROM groups ORDER BY group_name");
+	$r=$_SESSION['krr']->query("SELECT count(s.*) as cc,g.id,g.group_name FROM students s left join groups g on (g.id=s.group_id) group by g.group_name,g.id having group_name is not null order by group_name");
 	echo "<table><tr><th>group<th>students";
 	foreach($r as $k=>$v) { 
-		$s=$_SESSION['krr']->query("SELECT count(*) FROM students WHERE group_id=$1", array($v['id']));
-		if($s[0]['count'] > 0 ) { 
-			$count=$s[0]['count']; 
-		} else {
-			$count='';
-		}
-		echo "<tr><td><a class=blink href=?manage_students=$v[id]>$v[group_name]</a><td>$count";
+		echo "<tr><td><a class=blink href=?manage_students=$v[id]>$v[group_name]<td>$v[cc]</a>";
 	}
 	echo "</table>";
 }
