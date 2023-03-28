@@ -186,7 +186,7 @@ class karramba {/*{{{*/
 			$total_points_str=number_format((float)$total_points, 1, '.', '');
 			$details.="<tr><th>".join(
 				"<tr><td>", 
-				array($questions_presented[$i] ,$answers_presented[$i][0] ,$answers_presented[$i][1] ,$answers_presented[$i][2] , 
+				array($questions_presented[$i] ?? "HMM?", $answers_presented[$i][0] ?? "HMM?", $answers_presented[$i][1] ?? "HMM?", $answers_presented[$i][2] ?? "HMM?", 
 				"<green>".$correct_answers[$i]."</green> 
 				<tr><td><$color>".$student_answers[$i]."</$color> 
 				<span style='float:right'><$color>$score_str</$color> = $total_points_str</span>", 
@@ -206,8 +206,8 @@ class karramba {/*{{{*/
 				$set[]=$rr[0];
 			}
 		}
-		$student_answers=explode(",", $r['student_answers_vector']);
-		$correct_answers=explode(",", $r['correct_answers_vector']);
+		$student_answers=explode(",", $r['student_answers_vector'] ?? "hmm?");
+		$correct_answers=explode(",", $r['correct_answers_vector'] ?? "hmm?");
 		$questions_presented=[];
 		$answers_presented=[];
 		$order=explode(",", $r['order_vector']);

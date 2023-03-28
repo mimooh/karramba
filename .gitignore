@@ -1,0 +1,11 @@
+*.swp
+*.temp
+*.tmp
+*.pyc
+x.sh
+1.sh
+a.sh
+img
+vendor
+composer.json
+composer.lock
