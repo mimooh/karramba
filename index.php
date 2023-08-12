@@ -1,5 +1,5 @@
 <?PHP
-session_name('student'); 
+session_name(getenv("KARRAMBA_SESSION_NAME"));
 require_once("libKarramba.php");
 
 function login_form(){/*{{{*/

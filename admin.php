@@ -1,5 +1,5 @@
 <?PHP
-session_name(getenv("KARRAMBA_ADM_SESSION_NAME"));
+session_name(getenv("KARRAMBA_SESSION_NAME"));
 require_once("libKarramba.php");
 require_once("manage_students.php");
 require 'vendor/autoload.php';

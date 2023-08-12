@@ -1,5 +1,5 @@
 <?php
-session_name(getenv("KARRAMBA_ADM_SESSION_NAME"));
+session_name(getenv("KARRAMBA_SESSION_NAME"));
 require_once("libKarramba.php");
 function getStudentLogin($str) {/*{{{*/
 	$result=[];

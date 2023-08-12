@@ -75,8 +75,8 @@ class karramba {/*{{{*/
 			$inline_css
 			<link rel='stylesheet' href='js/jquery-ui.min.css'>
 			<meta name='viewport' content='width=device-width, initial-scale=1, minimum-scale=1'>
-			<script src='js/jquery-3.1.1.min.js'></script>
-			<script src='js/jquery-ui.min.js'></script>
+			<script src='https://code.jquery.com/jquery-3.7.0.min.js' integrity='sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=' crossorigin='anonymous'></script>
+			<script src='https://code.jquery.com/ui/1.13.2/jquery-ui.min.js' integrity='sha256-lSjKY0/srUM9BE3dPm+c4fBo1dky2v27Gdjm2uoZaL0=' crossorigin='anonymous'></script>
 			<script src='js/00karramba.js'></script>
 			<link rel='stylesheet' href='https://use.fontawesome.com/releases/v5.7.2/css/all.css' integrity='sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr' crossorigin='anonymous'>
 		</head>

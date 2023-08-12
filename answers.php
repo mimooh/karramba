@@ -1,5 +1,5 @@
 <?php
-session_name('student');
+session_name(getenv("KARRAMBA_SESSION_NAME"));
 require_once("libKarramba.php");
 function should_we_accept_quiz_submit() {/*{{{*/
 	// We check how much time student took on our clock. We give them +1 minute extra time (network problems etc.)
