@@ -65,7 +65,7 @@ function teacher_do_login(){/*{{{*/
 function do_logout(){/*{{{*/
 	$url=$_SESSION['home_url'];
 	$_SESSION=array();
-	header("Location: $url");
+	header("Location: $url"); exit();
 }/*}}}*/
 function quizes_configure(){/*{{{*/
 	# psql karramba -c "select * from questions limit 100"
