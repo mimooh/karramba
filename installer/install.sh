@@ -26,7 +26,7 @@
 	
 	# If you need to share variables with another PHP system, then perhaps you want to match the session_name()
 	# Otherwise you don't need it.
-	KARRAMBA_ADM_SESSION_NAME='karramba_admin'
+	KARRAMBA_SESSION_NAME='karramba'
 	
 	# If students passwords are composed of digits only, you may set this to one.
 	# In android we can set the context keyboard to numbers then.
@@ -63,7 +63,7 @@ echo "export KARRAMBA_NOTIFY='$KARRAMBA_NOTIFY'" >> $temp
 echo "export KARRAMBA_EXTRA_MENUS='$KARRAMBA_EXTRA_MENUS'" >> $temp
 echo "export KARRAMBA_NEW_STUDENT_FORM_URL='$KARRAMBA_NEW_STUDENT_FORM_URL'" >> $temp
 echo "export KARRAMBA_NEW_STUDENT_SECRET='$KARRAMBA_NEW_STUDENT_SECRET'" >> $temp
-echo "export KARRAMBA_ADM_SESSION_NAME='$KARRAMBA_ADM_SESSION_NAME'" >> $temp
+echo "export KARRAMBA_SESSION_NAME='$KARRAMBA_SESSION_NAME'" >> $temp
 echo "export KARRAMBA_STUDENT_INT_PASS='$KARRAMBA_STUDENT_INT_PASS'" >> $temp
 sudo cp $temp /etc/apache2/envvars
 rm $temp
