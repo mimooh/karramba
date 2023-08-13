@@ -56,6 +56,7 @@ function get_karramba_student_id() {# {{{
 function logged_outside() {/*{{{*/
 	// We are already logged elsewhere
 	$row=$_SESSION['krr']->query("SELECT id,group_id, last_name, first_name, index FROM students WHERE index=$1", array($_SESSION['student_id']));
+	if(empty($row)) { die("<br><br>logged outside, but not in karramba database"); }
 	$_SESSION+=$row[0];
 	$_SESSION['student']=$row[0]['last_name']." ".$row[0]['first_name'];
 	$_SESSION['karramba_student_id']=$row[0]['id'];
