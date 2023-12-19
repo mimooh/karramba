@@ -984,7 +984,7 @@ function main() {/*{{{*/
 		if(isset($_POST['logMeIn']))        { teacher_do_login(); }
 		#if(!isset($_SESSION['teacher_in'])) { teacher_login_form(); } // to use login form
 		if(!isset($_SESSION['teacher_in'])) { // to use Oauth, eg login with Microsoft page
-			header('Location:/sgsp/pracownik/index.php?wroc_do=karramba');
+			header('Location:/sonda_portal/index.php?wroc_do=karramba_adm');
 		}
 	} 
 	if(isset($_SESSION['teacher_in'])) {
